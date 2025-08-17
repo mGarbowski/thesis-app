@@ -1,8 +1,13 @@
 import uuid
 from datetime import datetime
+from io import BytesIO
 
 import numpy as np
+import torch
+from PIL import Image
+from facenet_pytorch import MTCNN, InceptionResnetV1
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Column, String, DateTime, LargeBinary
@@ -11,7 +16,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import sessionmaker, declarative_base
-from fastapi.middleware.cors import CORSMiddleware
+from torch import Tensor
+
 app = FastAPI()
 
 app.add_middleware(
@@ -26,6 +32,60 @@ DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/face_recog
 engine = create_async_engine(DATABASE_URL)
 async_session = sessionmaker(engine, class_=AsyncSession)
 Base = declarative_base()
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+detector = MTCNN(
+    margin=32,
+    select_largest=True,
+    device=device,
+).eval()
+
+feature_extractor = InceptionResnetV1(
+    pretrained="vggface2",
+    device=device
+).eval()
+
+
+class FaceRecognitionSystem:
+    def __init__(self, detector, feature_extractor):
+        self.detector: MTCNN = detector
+        self.feature_extractor: InceptionResnetV1 = feature_extractor
+
+    def get_cropped_image(self, image: Image) -> Tensor:
+        return self.detector(image)
+
+    def compute_feature_vector(self, cropped_image: Tensor) -> np.ndarray:
+        return self.feature_extractor(cropped_image.unsqueeze(0)).detach().cpu().numpy().flatten()
+
+
+face_recognition_system = FaceRecognitionSystem(detector, feature_extractor)
+
+
+def tensor_to_bytes(tensor: torch.Tensor) -> bytes:
+    """Convert RGB tensor to JPEG bytes"""
+    # Move to CPU and convert to numpy
+    np_array = tensor.detach().cpu().numpy()
+
+    # Convert from (C, H, W) to (H, W, C)
+    np_array = np_array.transpose(1, 2, 0)
+
+    # Check the range and normalize accordingly
+    if np_array.min() >= -1 and np_array.max() <= 1:
+        # Values are in [-1, 1] range, normalize to [0, 255]
+        np_array = ((np_array + 1) * 127.5).astype(np.uint8)
+    elif np_array.min() >= 0 and np_array.max() <= 1:
+        # Values are in [0, 1] range, scale to [0, 255]
+        np_array = (np_array * 255).astype(np.uint8)
+    else:
+        # Assume values are already in [0, 255] range
+        np_array = np.clip(np_array, 0, 255).astype(np.uint8)
+
+    # Convert to PIL Image and then to bytes
+    pil_image = Image.fromarray(np_array)
+    byte_io = BytesIO()
+    pil_image.save(byte_io, format='JPEG')
+    return byte_io.getvalue()
 
 
 class FaceImage(Base):
@@ -46,13 +106,14 @@ async def upload_face(
 ):
     try:
         image_data = await file.read()
-        # TODO use ML models to generate feature vector
-        random_vector = [0.0] * 512
+        image = Image.open(BytesIO(image_data)).convert("RGB")
+        cropped_img = face_recognition_system.get_cropped_image(image)
+        feature_vector = face_recognition_system.compute_feature_vector(cropped_img)
 
         async with async_session() as session:
             face_image = FaceImage(
-                image_data=image_data,
-                feature_vector=random_vector,
+                image_data=tensor_to_bytes(cropped_img),
+                feature_vector=feature_vector,
                 filename=file.filename,
                 label=label
             )
@@ -117,10 +178,13 @@ async def get_face_image(face_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to fetch image: {str(e)}")
 
 
-@app.get("/search-similar")
-async def search_similar():
+@app.post("/recognize")
+async def recognize(file: UploadFile = File(...)):
     try:
-        search_vector = np.random.random(512).tolist()
+        image_data = await file.read()
+        image = Image.open(BytesIO(image_data)).convert("RGB")
+        cropped_img = face_recognition_system.get_cropped_image(image)
+        search_vector = face_recognition_system.compute_feature_vector(cropped_img).tolist()
 
         async with async_session() as session:
             result = await session.execute(
@@ -151,5 +215,6 @@ async def search_similar():
                 },
                 "search_vector": search_vector,
             }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Recognition failed: {str(e)}")
