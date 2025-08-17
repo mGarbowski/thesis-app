@@ -11,8 +11,16 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import sessionmaker, declarative_base
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # React dev server default port
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/face_recognition"
 engine = create_async_engine(DATABASE_URL)
