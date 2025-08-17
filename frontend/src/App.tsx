@@ -1,5 +1,6 @@
 import './App.css'
 import FaceUploadForm from "./FaceUploadForm.tsx";
+import {WebcamFaceCapture} from "./WebcamFaceCapture.tsx";
 
 function App() {
 
@@ -8,6 +9,7 @@ function App() {
             <h1>Demo - praca dyplomowa inżynierska</h1>
             <h2>Mikołaj Garbowski</h2>
             <FaceUploadForm/>
+            <WebcamFaceCapture/>
         </>
     )
 }
