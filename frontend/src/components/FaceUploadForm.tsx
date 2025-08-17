@@ -17,7 +17,7 @@ interface UploadResponse {
   message: string;
 }
 
-const FaceUploadForm: React.FC = () => {
+export const FaceUploadForm: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [label, setLabel] = useState('');
   const [loading, setLoading] = useState(false);
@@ -135,4 +135,3 @@ const FaceUploadForm: React.FC = () => {
   );
 };
 
-export default FaceUploadForm;

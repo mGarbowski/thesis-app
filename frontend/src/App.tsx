@@ -1,17 +1,55 @@
-import './App.css'
-import FaceUploadForm from "./FaceUploadForm.tsx";
-import {WebcamFaceCapture} from "./WebcamFaceCapture.tsx";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { Link, useLocation } from 'react-router-dom';
+import { UploadPage } from './pages/UploadPage';
+import { WebcamPage } from './pages/WebcamPage';
 
-function App() {
+const Navigation: React.FC = () => {
+  const location = useLocation();
 
-    return (
-        <>
-            <h1>Demo - praca dyplomowa inżynierska</h1>
-            <h2>Mikołaj Garbowski</h2>
-            <FaceUploadForm/>
-            <WebcamFaceCapture/>
-        </>
-    )
-}
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Face Recognition App
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/upload"
+            variant={location.pathname === '/upload' ? 'outlined' : 'text'}
+          >
+            File Upload
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/webcam"
+            variant={location.pathname === '/webcam' ? 'outlined' : 'text'}
+          >
+            Webcam Capture
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
 
-export default App
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Navigation />
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/upload" replace />} />
+          <Route path="/upload" element={<UploadPage />} />
+          <Route path="/webcam" element={<WebcamPage />} />
+        </Routes>
+      </Container>
+    </Router>
+  );
+};
+
+export default App;
