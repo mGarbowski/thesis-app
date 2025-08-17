@@ -39,7 +39,7 @@ async def upload_face(
     try:
         image_data = await file.read()
         # TODO use ML models to generate feature vector
-        random_vector = np.random.rand(512).tolist()
+        random_vector = [0.0] * 512
 
         async with async_session() as session:
             face_image = FaceImage(
@@ -107,3 +107,34 @@ async def get_face_image(face_id: str):
         raise HTTPException(status_code=400, detail="Invalid face ID format")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch image: {str(e)}")
+
+
+@app.get("/search-similar")
+async def search_similar():
+    try:
+        search_vector = np.random.random(512).tolist()
+
+        async with async_session() as session:
+            result = await session.scalars(
+                select(FaceImage)
+                .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
+            )
+            closest_face = result.first()
+
+            if not closest_face:
+                raise HTTPException(status_code=404, detail="No faces found in database")
+
+
+            return {
+                "cosine_similarity": 0,
+                "matched_record": {
+                    "id": str(closest_face.id),
+                    "filename": closest_face.filename,
+                    "label": closest_face.label,
+                    "created_at": closest_face.created_at.isoformat(),
+                    "feature_vector": closest_face.feature_vector.tolist()
+                },
+                "search_vector": search_vector,
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
