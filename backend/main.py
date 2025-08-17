@@ -115,18 +115,25 @@ async def search_similar():
         search_vector = np.random.random(512).tolist()
 
         async with async_session() as session:
-            result = await session.scalars(
-                select(FaceImage)
+            result = await session.execute(
+                select(
+                    FaceImage,
+                    FaceImage.feature_vector.cosine_distance(search_vector).label('cosine_distance')
+                )
                 .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
             )
-            closest_face = result.first()
+            row = result.first()
 
-            if not closest_face:
+            if not row:
                 raise HTTPException(status_code=404, detail="No faces found in database")
 
+            closest_face = row[0]
+            cosine_distance = row[1]
+            cosine_similarity = 1 - cosine_distance
 
             return {
-                "cosine_similarity": 0,
+                "cosine_similarity": cosine_similarity,
+                "cosine_distance": cosine_distance,
                 "matched_record": {
                     "id": str(closest_face.id),
                     "filename": closest_face.filename,
