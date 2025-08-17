@@ -4,6 +4,7 @@ import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/materi
 import { Link, useLocation } from 'react-router-dom';
 import { UploadPage } from './pages/UploadPage';
 import { WebcamPage } from './pages/WebcamPage';
+import {RecognizePage} from "./pages/RecognizePage.tsx";
 
 const Navigation: React.FC = () => {
   const location = useLocation();
@@ -31,6 +32,14 @@ const Navigation: React.FC = () => {
           >
             Webcam Capture
           </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/recognize"
+            variant={location.pathname === '/recognize' ? 'outlined' : 'text'}
+          >
+            Recognize
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
@@ -46,6 +55,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/upload" replace />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/webcam" element={<WebcamPage />} />
+          <Route path="/recognize" element={<RecognizePage />} />
         </Routes>
       </Container>
     </Router>
