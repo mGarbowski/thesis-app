@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, R
 faces_router = APIRouter()
 
 
-@faces_router.post("/upload-face")
+@faces_router.post("/")
 async def upload_face(
         file: UploadFile = File(...),
         label: str = Form(...),
@@ -24,7 +24,7 @@ async def upload_face(
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 
-@faces_router.get("/faces")
+@faces_router.get("/")
 async def get_faces(face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)):
     try:
         faces = await face_rec_service.get_all_faces()
@@ -44,7 +44,7 @@ async def get_faces(face_rec_service: FaceRecognitionService = Depends(get_face_
         raise HTTPException(status_code=500, detail=f"Failed to fetch faces: {str(e)}")
 
 
-@faces_router.get("/faces/{face_id}/image")
+@faces_router.get("/{face_id}/image")
 async def get_face_image(face_id: str,
                          face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)):
     try:

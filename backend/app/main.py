@@ -13,4 +13,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(faces_router)
+app.include_router(faces_router, prefix="/api/faces")

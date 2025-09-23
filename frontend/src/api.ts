@@ -1,10 +1,10 @@
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 const apiUrls = {
-    recognize: `${API_BASE_URL}/recognize`,
+    recognize: `${API_BASE_URL}/faces/recognize`,
     getImage: (id: string) => `${API_BASE_URL}/faces/${id}/image`,
-    uploadFace: `${API_BASE_URL}/upload-face`,
+    uploadFace: `${API_BASE_URL}/faces`,
 }
 
 export type EmbeddingVector = number[];
