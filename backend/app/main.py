@@ -5,15 +5,13 @@ import numpy as np
 import torch
 from PIL import Image
 from app.db import get_db, FaceImage
-
-from facenet_pytorch import MTCNN, InceptionResnetV1
+from app.services import get_face_recognition_service, FaceRecognitionService
 from fastapi import Depends
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from torch import Tensor
 
 app = FastAPI()
 
@@ -24,34 +22,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-detector = MTCNN(
-    margin=32,
-    select_largest=True,
-    device=device,
-).eval()
-
-feature_extractor = InceptionResnetV1(
-    pretrained="vggface2",
-    device=device
-).eval()
-
-
-class FaceRecognitionSystem:
-    def __init__(self, detector, feature_extractor):
-        self.detector: MTCNN = detector
-        self.feature_extractor: InceptionResnetV1 = feature_extractor
-
-    def get_cropped_image(self, image: Image) -> Tensor:
-        return self.detector(image)
-
-    def compute_feature_vector(self, cropped_image: Tensor) -> np.ndarray:
-        return self.feature_extractor(cropped_image.unsqueeze(0)).detach().cpu().numpy().flatten()
-
-
-face_recognition_system = FaceRecognitionSystem(detector, feature_extractor)
 
 
 def tensor_to_bytes(tensor: torch.Tensor) -> bytes:
@@ -84,24 +54,10 @@ def tensor_to_bytes(tensor: torch.Tensor) -> bytes:
 async def upload_face(
         file: UploadFile = File(...),
         label: str = Form(...),
-        db: AsyncSession = Depends(get_db)
+        face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)
 ):
     try:
-        image_data = await file.read()
-        image = Image.open(BytesIO(image_data)).convert("RGB")
-        cropped_img = face_recognition_system.get_cropped_image(image)
-        feature_vector = face_recognition_system.compute_feature_vector(cropped_img)
-
-        face_image = FaceImage(
-            image_data=tensor_to_bytes(cropped_img),
-            feature_vector=feature_vector,
-            filename=file.filename,
-            label=label
-        )
-
-        db.add(face_image)
-        await db.commit()
-        await db.refresh(face_image)
+        face_image = await face_rec_service.add_face_image(file, label)
 
         return {
             "id": str(face_image.id),
