@@ -4,6 +4,8 @@ import {CameraAlt, Search, Upload} from '@mui/icons-material';
 import {ImageUpload} from "../components/ImageUpload.tsx";
 import {RecognitionResultDisplay} from "../components/RecognitionResultDisplay.tsx";
 import {WebcamCapture} from "../components/WebcamCapture.tsx";
+import {dataURLtoFile} from "../utils.ts";
+import {api} from "../api.ts";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -38,48 +40,24 @@ export const RecognizePage = () => {
     };
 
 
-    const dataURLtoFile = (dataurl: string, filename: string): File => {
-        const arr = dataurl.split(',');
-        const mime = arr[0].match(/:(.*?);/)?.[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, {type: mime});
-    };
-
     const handleRecognize = async () => {
+        if (!selectedFile && !capturedImage) {
+            setError('Please select an image or capture one from webcam');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         setMatchedResult(null);
 
+
         try {
-            const formData = new FormData();
+            const faceFile = selectedFile
+                ? selectedFile
+                : dataURLtoFile(capturedImage!, "webcam-capture.jpg");
 
-            if (tabValue === 0 && selectedFile) {
-                formData.append('file', selectedFile);
-            } else if (tabValue === 1 && capturedImage) {
-                const file = dataURLtoFile(capturedImage, 'webcam-capture.jpg');
-                formData.append('file', file);
-            } else {
-                setError('Please select an image or capture one from webcam');
-                return;
-            }
-
-            const response = await fetch('http://localhost:8000/recognize', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Recognition failed');
-            }
-
-            const result = await response.json();
-            setMatchedResult(result);
-
+            const recognitionResult = await api.recognizeImage(faceFile);
+            setMatchedResult(recognitionResult);
 
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred during recognition');
