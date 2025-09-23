@@ -5,7 +5,9 @@ from io import BytesIO
 import numpy as np
 import torch
 from PIL import Image
+from app.db import get_db
 from facenet_pytorch import MTCNN, InceptionResnetV1
+from fastapi import Depends
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -13,9 +15,9 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy import Column, String, DateTime, LargeBinary
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import sessionmaker, declarative_base
 from torch import Tensor
 
 app = FastAPI()
@@ -28,9 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/face_recognition"
-engine = create_async_engine(DATABASE_URL)
-async_session = sessionmaker(engine, class_=AsyncSession)
 Base = declarative_base()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -102,7 +101,8 @@ class FaceImage(Base):
 @app.post("/upload-face")
 async def upload_face(
         file: UploadFile = File(...),
-        label: str = Form(...)
+        label: str = Form(...),
+        db: AsyncSession = Depends(get_db)
 ):
     try:
         image_data = await file.read()
@@ -110,67 +110,64 @@ async def upload_face(
         cropped_img = face_recognition_system.get_cropped_image(image)
         feature_vector = face_recognition_system.compute_feature_vector(cropped_img)
 
-        async with async_session() as session:
-            face_image = FaceImage(
-                image_data=tensor_to_bytes(cropped_img),
-                feature_vector=feature_vector,
-                filename=file.filename,
-                label=label
-            )
+        face_image = FaceImage(
+            image_data=tensor_to_bytes(cropped_img),
+            feature_vector=feature_vector,
+            filename=file.filename,
+            label=label
+        )
 
-            session.add(face_image)
-            await session.commit()
-            await session.refresh(face_image)
+        db.add(face_image)
+        await db.commit()
+        await db.refresh(face_image)
 
-            return {
-                "id": str(face_image.id),
-                "filename": face_image.filename,
-                "label": face_image.label,
-                "message": "Face image uploaded successfully"
-            }
+        return {
+            "id": str(face_image.id),
+            "filename": face_image.filename,
+            "label": face_image.label,
+            "message": "Face image uploaded successfully"
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 
 @app.get("/faces")
-async def get_faces():
+async def get_faces(db: AsyncSession = Depends(get_db)):
     try:
-        async with async_session() as session:
-            result = await session.execute(select(FaceImage))
-            faces = result.scalars().all()
+        result = await db.execute(select(FaceImage))
+        faces = result.scalars().all()
 
-            return {
-                "faces": [
-                    {
-                        "id": str(face.id),
-                        "filename": face.filename,
-                        "label": face.label,
-                        "created_at": face.created_at.isoformat()
-                    }
-                    for face in faces
-                ]
-            }
+        return {
+            "faces": [
+                {
+                    "id": str(face.id),
+                    "filename": face.filename,
+                    "label": face.label,
+                    "created_at": face.created_at.isoformat()
+                }
+                for face in faces
+            ]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch faces: {str(e)}")
 
 
 @app.get("/faces/{face_id}/image")
-async def get_face_image(face_id: str):
+async def get_face_image(face_id: str, db: AsyncSession = Depends(get_db)):
     try:
-        async with async_session() as session:
-            result = await session.execute(
-                select(FaceImage).where(FaceImage.id == uuid.UUID(face_id))
-            )
-            face = result.scalar_one_or_none()
+        result = await db.execute(
+            select(FaceImage).where(FaceImage.id == uuid.UUID(face_id))
+        )
+        face = result.scalar_one_or_none()
 
-            if not face:
-                raise HTTPException(status_code=404, detail="Face image not found")
+        if not face:
+            raise HTTPException(status_code=404, detail="Face image not found")
 
-            return Response(
-                content=face.image_data,
-                media_type="image/jpeg"
-            )
+        return Response(
+            content=face.image_data,
+            media_type="image/jpeg"
+        )
 
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid face ID format")
@@ -179,42 +176,41 @@ async def get_face_image(face_id: str):
 
 
 @app.post("/recognize")
-async def recognize(file: UploadFile = File(...)):
+async def recognize(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
     try:
         image_data = await file.read()
         image = Image.open(BytesIO(image_data)).convert("RGB")
         cropped_img = face_recognition_system.get_cropped_image(image)
         search_vector = face_recognition_system.compute_feature_vector(cropped_img).tolist()
 
-        async with async_session() as session:
-            result = await session.execute(
-                select(
-                    FaceImage,
-                    FaceImage.feature_vector.cosine_distance(search_vector).label('cosine_distance')
-                )
-                .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
+        result = await db.execute(
+            select(
+                FaceImage,
+                FaceImage.feature_vector.cosine_distance(search_vector).label('cosine_distance')
             )
-            row = result.first()
+            .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
+        )
+        row = result.first()
 
-            if not row:
-                raise HTTPException(status_code=404, detail="No faces found in database")
+        if not row:
+            raise HTTPException(status_code=404, detail="No faces found in database")
 
-            closest_face = row[0]
-            cosine_distance = row[1]
-            cosine_similarity = 1 - cosine_distance
+        closest_face = row[0]
+        cosine_distance = row[1]
+        cosine_similarity = 1 - cosine_distance
 
-            return {
-                "cosine_similarity": cosine_similarity,
-                "cosine_distance": cosine_distance,
-                "matched_record": {
-                    "id": str(closest_face.id),
-                    "filename": closest_face.filename,
-                    "label": closest_face.label,
-                    "created_at": closest_face.created_at.isoformat(),
-                    "feature_vector": closest_face.feature_vector.tolist()
-                },
-                "search_vector": search_vector,
-            }
+        return {
+            "cosine_similarity": cosine_similarity,
+            "cosine_distance": cosine_distance,
+            "matched_record": {
+                "id": str(closest_face.id),
+                "filename": closest_face.filename,
+                "label": closest_face.label,
+                "created_at": closest_face.created_at.isoformat(),
+                "feature_vector": closest_face.feature_vector.tolist()
+            },
+            "search_vector": search_vector,
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Recognition failed: {str(e)}")
