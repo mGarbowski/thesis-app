@@ -55,7 +55,7 @@ export const AddFacePage = () => {
     return (
         <Box>
             <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-                Add New Face to recognition database
+                Add new face to recognition database
             </Typography>
 
             <Paper sx={{mb: 3}}>
@@ -71,28 +71,34 @@ export const AddFacePage = () => {
                 <TabPanel value={tabValue} index={1}>
                     <WebcamCapture capturedImageUrl={capturedImage} setCapturedImageUrl={setCapturedImage}/>
                 </TabPanel>
-
-                <TextField
-                    label="Label"
-                    value={label}
-                    onChange={(e) => setLabel(e.target.value)}
-                    margin="normal"
-                    required
-                    disabled={isLoading}
-                    helperText="Enter a label to identify this face"
-                    centered
-                />
-
-                <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    disabled={!canSubmit}
-                    sx={{mt: 2}}
-                >
-                    {isLoading ? <CircularProgress size={24}/> : 'Upload Face'}
-                </Button>
             </Paper>
 
+            <Paper sx={{p: 3, mx: "auto"}}>
+                <Box sx={{maxWidth: 400, mx: "auto"}}>
+                    <TextField
+                        label="Label"
+                        value={label}
+                        onChange={(e) => setLabel(e.target.value)}
+                        margin="normal"
+                        required
+                        disabled={isLoading}
+                        helperText="Enter a label to identify this face"
+                        variant="outlined"
+                        fullWidth
+                    />
+
+                    <Button
+                        onClick={handleSubmit}
+                        variant="contained"
+                        disabled={!canSubmit}
+                        sx={{height: 48, fontSize: 16}}
+                        fullWidth
+                    >
+                        {isLoading ? <CircularProgress size={24}/> : 'Upload Face'}
+                    </Button>
+                </Box>
+
+            </Paper>
 
             {error && (
                 <Alert severity="error" sx={{mt: 2}}>
