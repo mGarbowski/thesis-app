@@ -1,5 +1,5 @@
 import {api, type RecognizeResponse} from "../api.ts";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Alert, Card, CardContent, CardMedia, Grid, Paper, Typography} from "@mui/material";
 
 interface RecognitionResultDisplayProps {
