@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, ChangeEvent } from 'react';
 import {
   Box,
   Typography,
@@ -27,7 +27,8 @@ interface TabPanelProps {
   value: number;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index} = props;
   return (
     <div hidden={value !== index}>
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -35,7 +36,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   );
 };
 
-export const RecognizePage: React.FC = () => {
+export const RecognizePage = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -47,7 +48,7 @@ export const RecognizePage: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: any, newValue: number) => {
     setTabValue(newValue);
     setSelectedFile(null);
     setCapturedImage(null);
@@ -56,7 +57,7 @@ export const RecognizePage: React.FC = () => {
     setMatchedImageUrl(null);
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
@@ -289,3 +290,21 @@ export const RecognizePage: React.FC = () => {
     </Box>
   );
 };
+
+interface RecognitionResultDisplayProps {}
+
+const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) => {
+    return <div>RecognitionResultDisplay</div>;
+}
+
+interface ImageUploadTabProps {}
+
+const ImageUploadTab = (props: ImageUploadTabProps) => {
+    return <div>Image Upload</div>;
+}
+
+interface WebcamCaptureTabProps {}
+
+const WebcamCaptureTab = (props: WebcamCaptureTabProps) => {
+    return <div>Webcam Capture</div>;
+}
