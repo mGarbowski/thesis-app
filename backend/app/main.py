@@ -1,23 +1,18 @@
 import uuid
-from datetime import datetime
 from io import BytesIO
 
 import numpy as np
 import torch
 from PIL import Image
-from app.db import get_db
+from app.db import get_db, FaceImage
+
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from fastapi import Depends
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from pgvector.sqlalchemy import Vector
-from sqlalchemy import Column, String, DateTime, LargeBinary
 from sqlalchemy import select
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import mapped_column
 from torch import Tensor
 
 app = FastAPI()
@@ -29,8 +24,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
-
-Base = declarative_base()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -85,17 +78,6 @@ def tensor_to_bytes(tensor: torch.Tensor) -> bytes:
     byte_io = BytesIO()
     pil_image.save(byte_io, format='JPEG')
     return byte_io.getvalue()
-
-
-class FaceImage(Base):
-    __tablename__ = "face_images"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    image_data = Column(LargeBinary, nullable=False)
-    feature_vector = mapped_column(Vector(512))
-    filename = Column(String(255))
-    label = Column(String(255))
-    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 @app.post("/upload-face")
