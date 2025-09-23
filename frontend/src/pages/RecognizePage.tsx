@@ -39,10 +39,9 @@ export const RecognizePage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [matchedResult, setMatchedResult] = useState<any>(null);
-    const [matchedImageUrl, setMatchedImageUrl] = useState<string | null>(null);
 
     const webcamRef = useRef<Webcam>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+
 
     const handleTabChange = (_: any, newValue: number) => {
         setTabValue(newValue);
@@ -50,16 +49,8 @@ export const RecognizePage = () => {
         setCapturedImage(null);
         setError(null);
         setMatchedResult(null);
-        setMatchedImageUrl(null);
     };
 
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setSelectedFile(file);
-            setError(null);
-        }
-    };
 
     const captureImage = () => {
         const imageSrc = webcamRef.current?.getScreenshot();
@@ -89,7 +80,6 @@ export const RecognizePage = () => {
         setIsLoading(true);
         setError(null);
         setMatchedResult(null);
-        setMatchedImageUrl(null);
 
         try {
             const formData = new FormData();
@@ -116,15 +106,6 @@ export const RecognizePage = () => {
             const result = await response.json();
             setMatchedResult(result);
 
-            // Fetch the matched image
-            if (result.matched_record?.id) {
-                const imageResponse = await fetch(`http://localhost:8000/faces/${result.matched_record.id}/image`);
-                if (imageResponse.ok) {
-                    const imageBlob = await imageResponse.blob();
-                    const imageUrl = URL.createObjectURL(imageBlob);
-                    setMatchedImageUrl(imageUrl);
-                }
-            }
 
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred during recognition');
@@ -148,37 +129,7 @@ export const RecognizePage = () => {
                 </Tabs>
 
                 <TabPanel value={tabValue} index={0}>
-                    <Box textAlign="center">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            ref={fileInputRef}
-                            onChange={handleFileUpload}
-                            style={{display: 'none'}}
-                        />
-                        <Button
-                            variant="outlined"
-                            onClick={() => fileInputRef.current?.click()}
-                            startIcon={<Upload/>}
-                            sx={{mb: 2}}
-                        >
-                            Choose Image File
-                        </Button>
-                        {selectedFile && (
-                            <Box mt={2}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Selected: {selectedFile.name}
-                                </Typography>
-                                <Box mt={2}>
-                                    <img
-                                        src={URL.createObjectURL(selectedFile)}
-                                        alt="Selected"
-                                        style={{maxWidth: '100%', maxHeight: '300px', objectFit: 'contain'}}
-                                    />
-                                </Box>
-                            </Box>
-                        )}
-                    </Box>
+                    <ImageUpload selectedFile={selectedFile} onUpload={setSelectedFile}/>
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={1}>
@@ -289,7 +240,7 @@ const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {matchedImageUrl && (
-                        <MatchedFaceCard imageUrl={matchedImageUrl} label={recognitionResult.matched_record.label} />
+                        <MatchedFaceCard imageUrl={matchedImageUrl} label={recognitionResult.matched_record.label}/>
                     )}
                 </Grid>
             </Grid>
@@ -329,11 +280,55 @@ const MatchedFaceCard = (props: MatchedFaceCard) => {
 }
 
 
-interface ImageUploadTabProps {
+interface ImageUploadProps {
+    selectedFile: File | null;
+    onUpload: (file: File) => void;
 }
 
-const ImageUploadTab = (props: ImageUploadTabProps) => {
-    return <div>Image Upload</div>;
+const ImageUpload = (props: ImageUploadProps) => {
+    const {selectedFile, onUpload} = props;
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onUpload(file);
+        }
+    };
+
+    return (
+        <Box textAlign="center">
+            <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                style={{display: 'none'}}
+            />
+            <Button
+                variant="outlined"
+                onClick={() => fileInputRef.current?.click()}
+                startIcon={<Upload/>}
+                sx={{mb: 2}}
+            >
+                Choose Image File
+            </Button>
+            {selectedFile && (
+                <Box mt={2}>
+                    <Typography variant="body2" color="text.secondary">
+                        Selected: {selectedFile.name}
+                    </Typography>
+                    <Box mt={2}>
+                        <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Selected"
+                            style={{maxWidth: '100%', maxHeight: '300px', objectFit: 'contain'}}
+                        />
+                    </Box>
+                </Box>
+            )}
+        </Box>
+    );
 }
 
 interface WebcamCaptureTabProps {
