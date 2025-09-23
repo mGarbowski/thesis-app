@@ -16,6 +16,7 @@ import {
 import {CameraAlt, PhotoCamera, Search, Upload} from '@mui/icons-material';
 import Webcam from 'react-webcam';
 import {api, type RecognizeResponse} from '../api';
+import {ImageUpload} from "../components/ImageUpload.tsx";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -280,56 +281,7 @@ const MatchedFaceCard = (props: MatchedFaceCard) => {
 }
 
 
-interface ImageUploadProps {
-    selectedFile: File | null;
-    onUpload: (file: File) => void;
-}
 
-const ImageUpload = (props: ImageUploadProps) => {
-    const {selectedFile, onUpload} = props;
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            onUpload(file);
-        }
-    };
-
-    return (
-        <Box textAlign="center">
-            <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                style={{display: 'none'}}
-            />
-            <Button
-                variant="outlined"
-                onClick={() => fileInputRef.current?.click()}
-                startIcon={<Upload/>}
-                sx={{mb: 2}}
-            >
-                Choose Image File
-            </Button>
-            {selectedFile && (
-                <Box mt={2}>
-                    <Typography variant="body2" color="text.secondary">
-                        Selected: {selectedFile.name}
-                    </Typography>
-                    <Box mt={2}>
-                        <img
-                            src={URL.createObjectURL(selectedFile)}
-                            alt="Selected"
-                            style={{maxWidth: '100%', maxHeight: '300px', objectFit: 'contain'}}
-                        />
-                    </Box>
-                </Box>
-            )}
-        </Box>
-    );
-}
 
 interface WebcamCaptureTabProps {
 }
