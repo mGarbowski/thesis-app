@@ -1,9 +1,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from app.config import settings
 
-# TODO move to config file
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/face_recognition"
-engine = create_async_engine(DATABASE_URL)
+engine = create_async_engine(settings.database_url)
 async_session = sessionmaker(engine, class_=AsyncSession)
 
 async def get_db() -> AsyncSession:
