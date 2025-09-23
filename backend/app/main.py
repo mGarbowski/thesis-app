@@ -1,8 +1,3 @@
-from io import BytesIO
-
-import numpy as np
-import torch
-from PIL import Image
 from app.db import get_db, FaceImage
 from app.services import get_face_recognition_service, FaceRecognitionService
 from fastapi import Depends
@@ -19,32 +14,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
-
-
-def tensor_to_bytes(tensor: torch.Tensor) -> bytes:
-    """Convert RGB tensor to JPEG bytes"""
-    # Move to CPU and convert to numpy
-    np_array = tensor.detach().cpu().numpy()
-
-    # Convert from (C, H, W) to (H, W, C)
-    np_array = np_array.transpose(1, 2, 0)
-
-    # Check the range and normalize accordingly
-    if np_array.min() >= -1 and np_array.max() <= 1:
-        # Values are in [-1, 1] range, normalize to [0, 255]
-        np_array = ((np_array + 1) * 127.5).astype(np.uint8)
-    elif np_array.min() >= 0 and np_array.max() <= 1:
-        # Values are in [0, 1] range, scale to [0, 255]
-        np_array = (np_array * 255).astype(np.uint8)
-    else:
-        # Assume values are already in [0, 255] range
-        np_array = np.clip(np_array, 0, 255).astype(np.uint8)
-
-    # Convert to PIL Image and then to bytes
-    pil_image = Image.fromarray(np_array)
-    byte_io = BytesIO()
-    pil_image.save(byte_io, format='JPEG')
-    return byte_io.getvalue()
 
 
 @app.post("/upload-face")
