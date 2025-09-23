@@ -6,7 +6,7 @@ from uuid import UUID
 
 from PIL import Image
 from fastapi import Depends, UploadFile
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.db import FaceImage, get_db
@@ -73,8 +73,10 @@ class FaceRecognitionService:
                 FaceImage.feature_vector.cosine_distance(search_vector).label('cosine_distance')
             )
             .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
+            .limit(1)
         )
         row = result.first()
+
         if not row:
             return None
 
