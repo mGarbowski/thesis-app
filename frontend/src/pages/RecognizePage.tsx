@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {Alert, Box, Button, CircularProgress, Paper, Tab, Tabs, Typography} from '@mui/material';
 import {CameraAlt, Search, Upload} from '@mui/icons-material';
 import {ImageUpload} from "../components/ImageUpload.tsx";
@@ -6,21 +6,8 @@ import {RecognitionResultDisplay} from "../components/RecognitionResultDisplay.t
 import {WebcamCapture} from "../components/WebcamCapture.tsx";
 import {dataURLtoFile} from "../utils.ts";
 import {api} from "../api.ts";
+import {TabPanel} from '../components/TabPanel.tsx';
 
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
-
-const TabPanel = (props: TabPanelProps) => {
-    const {children, value, index} = props;
-    return (
-        <div hidden={value !== index}>
-            {value === index && <Box sx={{p: 3}}>{children}</Box>}
-        </div>
-    );
-};
 
 export const RecognizePage = () => {
     const [tabValue, setTabValue] = useState(0);
