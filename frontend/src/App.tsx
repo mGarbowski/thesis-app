@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
@@ -6,14 +5,14 @@ import { UploadPage } from './pages/UploadPage';
 import { WebcamPage } from './pages/WebcamPage';
 import {RecognizePage} from "./pages/RecognizePage.tsx";
 
-const Navigation: React.FC = () => {
+const Navigation = () => {
   const location = useLocation();
 
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Face Recognition App
+          Face Recognition Demo
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
@@ -46,7 +45,7 @@ const Navigation: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <Router>
       <Navigation />
