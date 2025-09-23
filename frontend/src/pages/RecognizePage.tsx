@@ -1,22 +1,9 @@
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
-import {
-    Alert,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CardMedia,
-    CircularProgress,
-    Grid,
-    Paper,
-    Tab,
-    Tabs,
-    Typography
-} from '@mui/material';
+import React, {useRef, useState} from 'react';
+import {Alert, Box, Button, CircularProgress, Paper, Tab, Tabs, Typography} from '@mui/material';
 import {CameraAlt, PhotoCamera, Search, Upload} from '@mui/icons-material';
 import Webcam from 'react-webcam';
-import {api, type RecognizeResponse} from '../api';
 import {ImageUpload} from "../components/ImageUpload.tsx";
+import {RecognitionResultDisplay} from "../components/RecognitionResultDisplay.tsx";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -41,8 +28,6 @@ export const RecognizePage = () => {
     const [error, setError] = useState<string | null>(null);
     const [matchedResult, setMatchedResult] = useState<any>(null);
 
-    const webcamRef = useRef<Webcam>(null);
-
 
     const handleTabChange = (_: any, newValue: number) => {
         setTabValue(newValue);
@@ -52,18 +37,6 @@ export const RecognizePage = () => {
         setMatchedResult(null);
     };
 
-
-    const captureImage = () => {
-        const imageSrc = webcamRef.current?.getScreenshot();
-        if (imageSrc) {
-            setCapturedImage(imageSrc);
-            setError(null);
-        }
-    };
-
-    const retakePhoto = () => {
-        setCapturedImage(null);
-    };
 
     const dataURLtoFile = (dataurl: string, filename: string): File => {
         const arr = dataurl.split(',');
@@ -134,46 +107,7 @@ export const RecognizePage = () => {
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={1}>
-                    <Box textAlign="center">
-                        {!capturedImage ? (
-                            <>
-                                <Webcam
-                                    ref={webcamRef}
-                                    audio={false}
-                                    screenshotFormat="image/jpeg"
-                                    width="100%"
-                                    style={{maxWidth: '500px', borderRadius: '8px'}}
-                                />
-                                <Box mt={2}>
-                                    <Button
-                                        variant="contained"
-                                        onClick={captureImage}
-                                        startIcon={<PhotoCamera/>}
-                                    >
-                                        Capture Photo
-                                    </Button>
-                                </Box>
-                            </>
-                        ) : (
-                            <>
-                                <img
-                                    src={capturedImage}
-                                    alt="Captured"
-                                    style={{
-                                        maxWidth: '100%',
-                                        maxHeight: '400px',
-                                        objectFit: 'contain',
-                                        borderRadius: '8px'
-                                    }}
-                                />
-                                <Box mt={2}>
-                                    <Button variant="outlined" onClick={retakePhoto} sx={{mr: 2}}>
-                                        Retake Photo
-                                    </Button>
-                                </Box>
-                            </>
-                        )}
-                    </Box>
+                    <WebcamCapture capturedImageUrl={capturedImage} setCapturedImageUrl={setCapturedImage}/>
                 </TabPanel>
             </Paper>
 
@@ -202,90 +136,74 @@ export const RecognizePage = () => {
     );
 };
 
-interface RecognitionResultDisplayProps {
-    recognitionResult: RecognizeResponse;
+
+interface WebcamCaptureProps {
+    capturedImageUrl: string | null;
+    setCapturedImageUrl: (image: string | null) => void;
 }
 
-const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) => {
-    const {recognitionResult} = props;
-    const [matchedImageUrl, setMatchedImageUrl] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+const WebcamCapture = (props: WebcamCaptureProps) => {
+    const {capturedImageUrl, setCapturedImageUrl} = props;
 
-    useEffect(() => {
-        setError(null);
-        api.getFaceImage(recognitionResult.matched_record.id)
-            .then(imageUrl => setMatchedImageUrl(imageUrl))
-            .catch(() => {
-                setMatchedImageUrl(null)
-                setError("Failed to load matched image");
-            });
-    }, [recognitionResult.matched_record.id]);
+    const handleCaptureImage = () => {
+        const imageSrc = webcamRef.current?.getScreenshot();
+        if (imageSrc) {
+            setCapturedImageUrl(imageSrc);
+        }
+    };
 
-    return (
-        <Paper sx={{p: 3}}>
-            <Typography variant="h6" gutterBottom>
-                Recognition Result
-            </Typography>
+    const handleRetakePhoto = () => {
+        setCapturedImageUrl(null);
+    };
 
-            <Grid container spacing={3} alignItems="center">
-                <Grid item xs={12} md={6}>
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Match Found!</strong>
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Label: {recognitionResult.matched_record.label}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Similarity: {(recognitionResult.cosine_similarity * 100).toFixed(0)}%
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    {matchedImageUrl && (
-                        <MatchedFaceCard imageUrl={matchedImageUrl} label={recognitionResult.matched_record.label}/>
-                    )}
-                </Grid>
-            </Grid>
+    const webcamRef = useRef<Webcam>(null);
 
-            {error && (
-                <Alert severity="warning">
-                    {error}
-                </Alert>
-            )}
-        </Paper>
-    );
-}
-
-interface MatchedFaceCard {
-    imageUrl: string;
-    label: string;
-}
-
-const MatchedFaceCard = (props: MatchedFaceCard) => {
-    const {imageUrl, label} = props;
-    return (
-        <Card>
-            <CardMedia
-                component="img"
-                height="200"
-                image={imageUrl}
-                alt={label}
-                sx={{objectFit: 'contain'}}
+    const webcam = () => (
+        <>
+            <Webcam
+                ref={webcamRef}
+                audio={false}
+                screenshotFormat="image/jpeg"
+                width="100%"
+                style={{maxWidth: '500px', borderRadius: '8px'}}
             />
-            <CardContent>
-                <Typography variant="body2" color="text.secondary" textAlign="center">
-                    Matched Face
-                </Typography>
-            </CardContent>
-        </Card>
+            <Box mt={2}>
+                <Button
+                    variant="contained"
+                    onClick={handleCaptureImage}
+                    startIcon={<PhotoCamera/>}
+                >
+                    Capture Photo
+                </Button>
+            </Box>
+        </>
+    )
+
+    const capturedImage = () => (
+        <>
+            <img
+                src={capturedImageUrl!}
+                alt="Captured"
+                style={{
+                    maxWidth: '100%',
+                    maxHeight: '400px',
+                    objectFit: 'contain',
+                    borderRadius: '8px'
+                }}
+            />
+            <Box mt={2}>
+                <Button variant="outlined" onClick={handleRetakePhoto} sx={{mr: 2}}>
+                    Retake Photo
+                </Button>
+            </Box>
+        </>
+    )
+    return (
+        <Box textAlign="center">
+            {!capturedImageUrl
+                ? webcam()
+                : capturedImage()
+            }
+        </Box>
     );
-}
-
-
-
-
-interface WebcamCaptureTabProps {
-}
-
-const WebcamCaptureTab = (props: WebcamCaptureTabProps) => {
-    return <div>Webcam Capture</div>;
 }
