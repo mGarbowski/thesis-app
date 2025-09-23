@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from io import BytesIO
 from uuid import UUID
 
 from PIL import Image
-from app.db import FaceImage, get_db
-from app.services.face_embedding import FaceEmbeddingService
-from app.services.face_embedding import get_face_embedding_service
 from fastapi import Depends, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio.session import AsyncSession
+
+from app.db import FaceImage, get_db
+from app.services.face_embedding import FaceEmbeddingService
+from app.services.face_embedding import get_face_embedding_service
 
 
 @dataclass
@@ -60,7 +63,7 @@ class FaceRecognitionService:
 
     async def find_closest_face(self, file: UploadFile) -> RecognitionResult | None:
         image_data = await file.read()
-        image = Image.open(BytesIO(image_data)).convert("RGB")
+        image = self._to_pil_image(image_data)
         cropped_img = self.face_embedding_service.get_cropped_image(image)
         search_vector = self.face_embedding_service.compute_feature_vector(cropped_img).tolist()
 

@@ -1,10 +1,13 @@
-from .base import Base
+import uuid
+from datetime import datetime
+
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import Column, String, DateTime, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import mapped_column
-from pgvector.sqlalchemy import Vector
-import uuid
-from datetime import datetime
+
+from .base import Base
+
 
 class FaceImage(Base):
     __tablename__ = "face_images"

@@ -1,7 +1,8 @@
-from app.api import faces_router
-from app.config import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import faces_router
+from app.config import settings
 
 app = FastAPI()
 

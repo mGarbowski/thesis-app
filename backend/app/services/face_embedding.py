@@ -1,9 +1,11 @@
 from typing import Protocol
-from PIL.Image import Image
-from torch import Tensor
+
 import numpy as np
-from facenet_pytorch import MTCNN, InceptionResnetV1
 import torch
+from PIL.Image import Image
+from facenet_pytorch import MTCNN, InceptionResnetV1
+from torch import Tensor
+
 
 class FaceEmbeddingService(Protocol):
     def get_cropped_image(self, image: Image) -> Tensor:
@@ -39,6 +41,7 @@ _feature_extractor = InceptionResnetV1(
 ).eval()
 
 _face_embedding_service = TorchFaceEmbeddingService(_detector, _feature_extractor)
+
 
 def get_face_embedding_service() -> FaceEmbeddingService:
     return _face_embedding_service
