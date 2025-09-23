@@ -13,3 +13,6 @@ license = { text = "MIT" }
 
 [tool.pdm]
 distribution = false
+
+[tool.pdm.scripts]
+dev = { shell = "fastapi dev main.py", help = "Run the development server with auto-reload" }
