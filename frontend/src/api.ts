@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://localhost:8000';
 const apiUrls = {
     recognize: `${API_BASE_URL}/recognize`,
     getImage: (id: string) => `${API_BASE_URL}/faces/${id}/image`,
+    uploadFace: `${API_BASE_URL}/upload-face`,
 }
 
 export type EmbeddingVector = number[];
@@ -47,7 +48,33 @@ const getFaceImage = async (faceId: string): Promise<string> => {
     return URL.createObjectURL(imageBlob);
 }
 
+export interface UploadResponse {
+  id: string;
+  filename: string;
+  label: string;
+  message: string;
+}
+
+const uploadFace = async (image: File, label: string): Promise<UploadResponse> => {
+    const formData = new FormData();
+    formData.append('file', image);
+    formData.append('label', label);
+
+    const response = await fetch(apiUrls.uploadFace, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Upload failed');
+    }
+
+    return await response.json() as UploadResponse;
+}
+
 export const api = {
     recognizeImage,
     getFaceImage,
+    uploadFace,
 }

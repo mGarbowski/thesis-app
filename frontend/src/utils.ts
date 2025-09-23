@@ -9,3 +9,8 @@ export const dataURLtoFile = (dataurl: string, filename: string): File => {
     }
     return new File([u8arr], filename, {type: mime});
 };
+
+export const generateWebcamCaptureFilename = (): string => {
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+    return `webcam_capture_${timestamp}.jpg`;
+}

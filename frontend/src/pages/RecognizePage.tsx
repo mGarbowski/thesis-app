@@ -4,7 +4,7 @@ import {CameraAlt, Search, Upload} from '@mui/icons-material';
 import {ImageUpload} from "../components/ImageUpload.tsx";
 import {RecognitionResultDisplay} from "../components/RecognitionResultDisplay.tsx";
 import {WebcamCapture} from "../components/WebcamCapture.tsx";
-import {dataURLtoFile} from "../utils.ts";
+import {dataURLtoFile, generateWebcamCaptureFilename} from "../utils.ts";
 import {api} from "../api.ts";
 import {TabPanel} from '../components/TabPanel.tsx';
 
@@ -41,7 +41,7 @@ export const RecognizePage = () => {
         try {
             const faceFile = selectedFile
                 ? selectedFile
-                : dataURLtoFile(capturedImage!, "webcam-capture.jpg");
+                : dataURLtoFile(capturedImage!, generateWebcamCaptureFilename());
 
             const recognitionResult = await api.recognizeImage(faceFile);
             setMatchedResult(recognitionResult);
