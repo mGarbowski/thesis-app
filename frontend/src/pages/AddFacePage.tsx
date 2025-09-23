@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {Alert, Box, Button, CircularProgress, Paper, Tab, Tabs, TextField, Typography} from "@mui/material";
 import {CameraAlt, Upload} from "@mui/icons-material";
 import {TabPanel} from "../components/TabPanel.tsx";
