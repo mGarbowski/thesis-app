@@ -16,3 +16,8 @@ distribution = false
 
 [tool.pdm.scripts]
 dev = { shell = "fastapi dev", help = "Run the development server with auto-reload" }
+
+[dependency-groups]
+dev = [
+    "requests>=2.32.5",
+]
