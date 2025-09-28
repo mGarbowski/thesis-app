@@ -16,6 +16,9 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@face_recognition_db_prod:5432/face_recognition
       CORS_ALLOWED_ORIGIN: ""
+      FACENET_WEIGHTS_PATH: /srv/models/facenet_0001.pth
+    volumes:
+      - ./backend/models/facenet_0001.pth:/srv/models/facenet_0001.pth:ro
     depends_on:
       - postgres
 
