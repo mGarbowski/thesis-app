@@ -86,6 +86,7 @@ async def recognize(file: UploadFile = File(...),
             },
             "search_vector": result.search_vector,
         }
-
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Recognition failed: {str(e)}")
