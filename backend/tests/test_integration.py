@@ -11,7 +11,7 @@ async def upload_face(client: AsyncClient, filename: str, label: str) -> UUID:
         response = await client.post(
             "/api/faces/",
             files={"file": (filename, f, "image/jpeg")},
-            data={"label": label}
+            data={"label": label},
         )
     assert response.status_code == 200
 
@@ -25,7 +25,9 @@ async def upload_face(client: AsyncClient, filename: str, label: str) -> UUID:
     return person_id
 
 
-async def check_face_in_list(client: AsyncClient, person_id: UUID, label: str, filename: str):
+async def check_face_in_list(
+    client: AsyncClient, person_id: UUID, label: str, filename: str
+):
     response = await client.get("/api/faces/")
     assert response.status_code == 200
     data = response.json()

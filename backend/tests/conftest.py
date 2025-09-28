@@ -7,14 +7,18 @@ from app.db import get_db
 from app.db.base import Base
 from app.main import app
 
-TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/face_recognition_test"
+TEST_DATABASE_URL = (
+    "postgresql+asyncpg://postgres:postgres@localhost:5433/face_recognition_test"
+)
 engine = create_async_engine(TEST_DATABASE_URL, future=True)
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
 @pytest_asyncio.fixture
 async def client():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
         yield client
 
 

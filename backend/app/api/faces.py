@@ -1,4 +1,13 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Response, Query
+from fastapi import (
+    APIRouter,
+    Depends,
+    UploadFile,
+    File,
+    Form,
+    HTTPException,
+    Response,
+    Query,
+)
 
 from app.services import get_face_recognition_service, FaceRecognitionService
 
@@ -7,9 +16,9 @@ faces_router = APIRouter()
 
 @faces_router.post("/")
 async def upload_face(
-        file: UploadFile = File(...),
-        label: str = Form(...),
-        face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)
+    file: UploadFile = File(...),
+    label: str = Form(...),
+    face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
     try:
         face_image = await face_rec_service.add_face_image(file, label)
@@ -18,7 +27,7 @@ async def upload_face(
             "id": str(face_image.id),
             "filename": face_image.filename,
             "label": face_image.label,
-            "message": "Face image uploaded successfully"
+            "message": "Face image uploaded successfully",
         }
 
     except Exception as e:
@@ -27,9 +36,9 @@ async def upload_face(
 
 @faces_router.get("/")
 async def get_faces(
-        page: int = Query(1, ge=1),
-        page_size: int = Query(25, ge=1, le=100),
-        face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
     try:
         faces = await face_rec_service.get_faces(page, page_size)
@@ -42,28 +51,27 @@ async def get_faces(
                     "id": str(face.id),
                     "filename": face.filename,
                     "label": face.label,
-                    "created_at": face.created_at.isoformat()
+                    "created_at": face.created_at.isoformat(),
                 }
                 for face in faces
-            ]
+            ],
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch faces: {str(e)}")
 
 
 @faces_router.get("/{face_id}/image")
-async def get_face_image(face_id: str,
-                         face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)):
+async def get_face_image(
+    face_id: str,
+    face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
+):
     try:
         face = await face_rec_service.get_face_by_id(face_id)
 
         if not face:
             raise HTTPException(status_code=404, detail="Face image not found")
 
-        return Response(
-            content=face.image_data,
-            media_type="image/jpeg"
-        )
+        return Response(content=face.image_data, media_type="image/jpeg")
 
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid face ID format")
@@ -72,8 +80,10 @@ async def get_face_image(face_id: str,
 
 
 @faces_router.post("/recognize")
-async def recognize(file: UploadFile = File(...),
-                    face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)):
+async def recognize(
+    file: UploadFile = File(...),
+    face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
+):
     try:
         result = await face_rec_service.find_closest_face(file)
 
@@ -88,7 +98,7 @@ async def recognize(file: UploadFile = File(...),
                 "filename": result.face_image.filename,
                 "label": result.face_image.label,
                 "created_at": result.face_image.created_at.isoformat(),
-                "feature_vector": result.face_image.feature_vector.tolist()
+                "feature_vector": result.face_image.feature_vector.tolist(),
             },
             "search_vector": result.search_vector,
         }

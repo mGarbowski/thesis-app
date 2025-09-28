@@ -40,7 +40,7 @@ class FaceRecognitionService:
             image_data=image_data,
             feature_vector=feature_vector,
             label=label,
-            filename=file.filename
+            filename=file.filename,
         )
 
         self.db.add(face_image)
@@ -61,9 +61,7 @@ class FaceRecognitionService:
         return result.scalars().all()
 
     async def get_all_faces_count(self) -> int:
-        result = await self.db.execute(
-            select(text("COUNT(*)")).select_from(FaceImage)
-        )
+        result = await self.db.execute(select(text("COUNT(*)")).select_from(FaceImage))
         return result.scalar_one()
 
     async def get_face_by_id(self, id: str) -> FaceImage:
@@ -76,12 +74,16 @@ class FaceRecognitionService:
         image_data = await file.read()
         image = self._to_pil_image(image_data)
         cropped_img = self.face_embedding_service.get_cropped_image(image)
-        search_vector = self.face_embedding_service.compute_feature_vector(cropped_img).tolist()
+        search_vector = self.face_embedding_service.compute_feature_vector(
+            cropped_img
+        ).tolist()
 
         result = await self.db.execute(
             select(
                 FaceImage,
-                FaceImage.feature_vector.cosine_distance(search_vector).label('cosine_distance')
+                FaceImage.feature_vector.cosine_distance(search_vector).label(
+                    "cosine_distance"
+                ),
             )
             .order_by(FaceImage.feature_vector.cosine_distance(search_vector))
             .limit(1)
@@ -99,12 +101,11 @@ class FaceRecognitionService:
             face_image=closest_face,
             cosine_similarity=cosine_similarity,
             cosine_distance=cosine_distance,
-            search_vector=search_vector
+            search_vector=search_vector,
         )
 
 
 def get_face_recognition_service(
-        face_embedding_service=Depends(get_face_embedding_service),
-        db=Depends(get_db)
+    face_embedding_service=Depends(get_face_embedding_service), db=Depends(get_db)
 ) -> FaceRecognitionService:
     return FaceRecognitionService(face_embedding_service, db)
