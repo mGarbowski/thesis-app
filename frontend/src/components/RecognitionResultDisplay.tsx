@@ -28,7 +28,7 @@ export const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) =
             </Typography>
 
             <Grid container spacing={3} alignItems="center">
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Typography variant="body1" gutterBottom>
                         <strong>Match Found!</strong>
                     </Typography>
@@ -39,7 +39,7 @@ export const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) =
                         Similarity: {(recognitionResult.cosine_similarity * 100).toFixed(0)}%
                     </Typography>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     {matchedImageUrl && (
                         <MatchedFaceCard imageUrl={matchedImageUrl} label={recognitionResult.matched_record.label}/>
                     )}
