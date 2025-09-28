@@ -16,7 +16,7 @@ distribution = false
 
 [tool.pdm.scripts]
 dev = { shell = "fastapi dev", help = "Run the development server with auto-reload" }
-prod = { shell = "uvicorn app.main:app --log-config logging_config.yml", help = "Run the production server" }
+prod = { shell = "uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config logging_config.yml", help = "Run the production server" }
 test = { shell = "pytest", help = "Run the test suite" }
 cov = { shell = "pytest --cov=app", help = "Run the test suite with coverage report" }
 
