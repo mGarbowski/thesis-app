@@ -3,9 +3,13 @@ import {AppBar, Box, Button, Container, Toolbar, Typography} from '@mui/material
 import {RecognizePage} from "./pages/RecognizePage.tsx";
 import {AddFacePage} from "./pages/AddFacePage.tsx";
 import {GalleryPage} from "./pages/GalleryPage.tsx";
+import {useTranslation} from "react-i18next";
 
 const Navigation = () => {
     const location = useLocation();
+    const {t, i18n} = useTranslation();
+
+
 
     return (
         <AppBar position="static">
@@ -13,6 +17,8 @@ const Navigation = () => {
                 <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                     Face Recognition Demo
                 </Typography>
+                <Button color="inherit" onClick={() => i18n.changeLanguage("en")}>EN</Button>
+                <Button color="inherit" onClick={() => i18n.changeLanguage("pl")}>PL</Button>
                 <Box sx={{display: 'flex', gap: 2}}>
                     <Button
                         color="inherit"
@@ -20,7 +26,7 @@ const Navigation = () => {
                         to="/add"
                         variant={location.pathname === '/add' ? 'outlined' : 'text'}
                     >
-                        Add
+                        {t('add')}
                     </Button>
                     <Button
                         color="inherit"
@@ -28,7 +34,7 @@ const Navigation = () => {
                         to="/recognize"
                         variant={location.pathname === '/recognize' ? 'outlined' : 'text'}
                     >
-                        Recognize
+                        {t('recognize')}
                     </Button>
                     <Button
                         color="inherit"
@@ -36,7 +42,7 @@ const Navigation = () => {
                         to="/gallery"
                         variant={location.pathname === '/gallery' ? 'outlined' : 'text'}
                     >
-                        Gallery
+                        {t('gallery')}
                     </Button>
 
                 </Box>

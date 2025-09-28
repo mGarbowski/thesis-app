@@ -1,8 +1,11 @@
 import {Box, CircularProgress, Pagination, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {api, apiUrls, type FaceRecord} from "../api";
+import {useTranslation} from "react-i18next";
 
 export const GalleryPage = () => {
+    const {t} = useTranslation();
+
     const pageSize = 20;
     const [page, setPage] = useState(1);
     const [faces, setFaces] = useState<FaceRecord[]>([]);
@@ -33,7 +36,7 @@ export const GalleryPage = () => {
     return (
         <Box maxWidth={1200} mx="auto" my={4} px={2}>
             <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-                Gallery
+                {t('gallery')}
             </Typography>
 
             {error && <Typography color="error">{error}</Typography>}
