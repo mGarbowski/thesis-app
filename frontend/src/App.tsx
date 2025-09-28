@@ -19,6 +19,7 @@ import { LanguageSelector } from "./components/LanguageSelector.tsx";
 import { AddFacePage } from "./pages/AddFacePage.tsx";
 import { GalleryPage } from "./pages/GalleryPage.tsx";
 import { RecognizePage } from "./pages/RecognizePage.tsx";
+import "./App.css"
 
 const Navigation = () => {
 	const location = useLocation();
