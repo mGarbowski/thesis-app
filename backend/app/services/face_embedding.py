@@ -2,12 +2,12 @@ from typing import Protocol
 
 import numpy as np
 import torch
-from PIL.Image import Image
 from facenet_pytorch import MTCNN, InceptionResnetV1
+from PIL.Image import Image
 from torch import Tensor
 
-from app.logging import logger
 from app.config import settings
+from app.logging import logger
 
 
 class FaceEmbeddingService(Protocol):

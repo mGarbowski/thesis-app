@@ -4,14 +4,13 @@ from dataclasses import dataclass
 from io import BytesIO
 from uuid import UUID
 
-from PIL import Image
 from fastapi import Depends, UploadFile
+from PIL import Image
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.db import FaceImage, get_db
-from app.services.face_embedding import FaceEmbeddingService
-from app.services.face_embedding import get_face_embedding_service
+from app.services.face_embedding import FaceEmbeddingService, get_face_embedding_service
 
 
 @dataclass

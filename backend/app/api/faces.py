@@ -1,15 +1,15 @@
 from fastapi import (
     APIRouter,
     Depends,
-    UploadFile,
     File,
     Form,
     HTTPException,
-    Response,
     Query,
+    Response,
+    UploadFile,
 )
 
-from app.services import get_face_recognition_service, FaceRecognitionService
+from app.services import FaceRecognitionService, get_face_recognition_service
 
 faces_router = APIRouter()
 
