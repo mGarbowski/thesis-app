@@ -18,6 +18,7 @@ import {
 import { AddFacePage } from "./pages/AddFacePage.tsx";
 import { GalleryPage } from "./pages/GalleryPage.tsx";
 import { RecognizePage } from "./pages/RecognizePage.tsx";
+import { LanguageSelector } from "./components/LanguageSelector.tsx";
 
 const Navigation = () => {
 	const location = useLocation();
@@ -29,12 +30,7 @@ const Navigation = () => {
 				<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 					Face Recognition Demo
 				</Typography>
-				<Button color="inherit" onClick={() => i18n.changeLanguage("en")}>
-					EN
-				</Button>
-				<Button color="inherit" onClick={() => i18n.changeLanguage("pl")}>
-					PL
-				</Button>
+				<LanguageSelector />
 				<Box sx={{ display: "flex", gap: 2 }}>
 					<Button
 						color="inherit"
