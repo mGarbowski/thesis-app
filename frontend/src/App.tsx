@@ -15,14 +15,14 @@ import {
 	Routes,
 	useLocation,
 } from "react-router-dom";
+import { LanguageSelector } from "./components/LanguageSelector.tsx";
 import { AddFacePage } from "./pages/AddFacePage.tsx";
 import { GalleryPage } from "./pages/GalleryPage.tsx";
 import { RecognizePage } from "./pages/RecognizePage.tsx";
-import { LanguageSelector } from "./components/LanguageSelector.tsx";
 
 const Navigation = () => {
 	const location = useLocation();
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<AppBar position="static">
