@@ -20,6 +20,15 @@ prod = { shell = "uvicorn app.main:app --log-config logging_config.yml", help = 
 test = { shell = "pytest", help = "Run the test suite" }
 cov = { shell = "pytest --cov=app", help = "Run the test suite with coverage report" }
 
+# Static analysis
+black = "black ."
+black_check = "black --check ."
+isort = "isort ."
+isort_check = "isort . --check-only"
+pyright = "pyright"
+fmt = { composite = ["black", "isort"] }
+fmt_check = { composite = ["black_check", "isort_check", "pyright"] }
+
 [dependency-groups]
 dev = [
     "requests>=2.32.5",
@@ -27,4 +36,34 @@ dev = [
     "pytest-asyncio>=1.2.0",
     "httpx>=0.28.1",
     "pytest-cov>=7.0.0",
+    "black>=25.9.0",
+    "isort>=6.0.1",
+    "pyright>=1.1.405",
+    "radon>=6.0.1",
 ]
+
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.pyright]
+include = ["src"]
+exclude = [
+    "**/__pycache__",
+    "notebooks",
+    "tests",
+]
+
+typeCheckingMode = "basic"      # Use basic type checking (can be set to "strict" for stricter checks)
+reportMissingImports = "error"  # Report missing imports as errors
+reportMissingTypeStubs = false  # Do not require type stubs for third-party libraries
+reportUnusedImport = "error"
+reportUnusedVariable = "error"
+reportUnusedFunction = "error"
+
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+venvPath = ".venv"
