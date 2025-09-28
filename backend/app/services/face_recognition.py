@@ -49,11 +49,22 @@ class FaceRecognitionService:
 
         return face_image
 
-    async def get_all_faces(self):
+    async def get_faces(self, page: int, page_size: int) -> list[FaceImage]:
+        offset = (page - 1) * page_size
+
         result = await self.db.execute(
             select(FaceImage)
+            .order_by(FaceImage.created_at.desc())
+            .offset(offset)
+            .limit(page_size)
         )
         return result.scalars().all()
+
+    async def get_all_faces_count(self) -> int:
+        result = await self.db.execute(
+            select(text("COUNT(*)")).select_from(FaceImage)
+        )
+        return result.scalar_one()
 
     async def get_face_by_id(self, id: str) -> FaceImage:
         result = await self.db.execute(

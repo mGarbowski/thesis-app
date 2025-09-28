@@ -2,6 +2,7 @@ import {useRef} from "react";
 import Webcam from "react-webcam";
 import {Box, Button} from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
+import {useTranslation} from "react-i18next";
 
 interface WebcamCaptureProps {
     capturedImageUrl: string | null;
@@ -10,6 +11,7 @@ interface WebcamCaptureProps {
 
 export const WebcamCapture = (props: WebcamCaptureProps) => {
     const {capturedImageUrl, setCapturedImageUrl} = props;
+    const {t} = useTranslation();
 
     const handleCaptureImage = () => {
         const imageSrc = webcamRef.current?.getScreenshot();
@@ -39,7 +41,7 @@ export const WebcamCapture = (props: WebcamCaptureProps) => {
                     onClick={handleCaptureImage}
                     startIcon={<PhotoCamera/>}
                 >
-                    Capture Photo
+                    {t("capturePhoto")}
                 </Button>
             </Box>
         </>
@@ -59,7 +61,7 @@ export const WebcamCapture = (props: WebcamCaptureProps) => {
             />
             <Box mt={2}>
                 <Button variant="outlined" onClick={handleRetakePhoto} sx={{mr: 2}}>
-                    Retake Photo
+                    {t("retakePhoto")}
                 </Button>
             </Box>
         </>

@@ -1,6 +1,7 @@
 import {api, type RecognizeResponse} from "../api.ts";
 import {useEffect, useState} from "react";
 import {Alert, Card, CardContent, CardMedia, Grid, Paper, Typography} from "@mui/material";
+import {useTranslation} from "react-i18next";
 
 interface RecognitionResultDisplayProps {
     recognitionResult: RecognizeResponse;
@@ -8,6 +9,7 @@ interface RecognitionResultDisplayProps {
 
 export const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) => {
     const {recognitionResult} = props;
+    const {t} = useTranslation();
     const [matchedImageUrl, setMatchedImageUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -17,26 +19,26 @@ export const RecognitionResultDisplay = (props: RecognitionResultDisplayProps) =
             .then(imageUrl => setMatchedImageUrl(imageUrl))
             .catch(() => {
                 setMatchedImageUrl(null)
-                setError("Failed to load matched image");
+                setError(t("failedToLoadMatchedImage"));
             });
     }, [recognitionResult.matched_record.id]);
 
     return (
         <Paper sx={{p: 3}}>
             <Typography variant="h6" gutterBottom>
-                Recognition Result
+                {t("recognitionResult")}
             </Typography>
 
             <Grid container spacing={3} alignItems="center">
                 <Grid size={{xs: 12, md: 6}}>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Match Found!</strong>
+                        <strong>{t("matchFound")}</strong>
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Label: {recognitionResult.matched_record.label}
+                        {t("label")}: {recognitionResult.matched_record.label}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Similarity: {(recognitionResult.cosine_similarity * 100).toFixed(0)}%
+                        {t("similarity")}: {(recognitionResult.cosine_similarity * 100).toFixed(0)}%
                     </Typography>
                 </Grid>
                 <Grid size={{xs: 12, md: 6}}>
@@ -62,6 +64,7 @@ interface MatchedFaceCard {
 
 const MatchedFaceCard = (props: MatchedFaceCard) => {
     const {imageUrl, label} = props;
+    const {t} = useTranslation();
     return (
         <Card>
             <CardMedia
@@ -73,7 +76,7 @@ const MatchedFaceCard = (props: MatchedFaceCard) => {
             />
             <CardContent>
                 <Typography variant="body2" color="text.secondary" textAlign="center">
-                    Matched Face
+                    {t("matchedFace")}
                 </Typography>
             </CardContent>
         </Card>

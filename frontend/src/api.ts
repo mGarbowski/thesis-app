@@ -1,8 +1,8 @@
-
 const API_BASE_URL = 'http://localhost:8000/api';
 
-const apiUrls = {
+export const apiUrls = {
     recognize: `${API_BASE_URL}/faces/recognize`,
+    getFaces: (page: number, page_size: number) => `${API_BASE_URL}/faces/?page=${page}&page_size=${page_size}`,
     getImage: (id: string) => `${API_BASE_URL}/faces/${id}/image`,
     uploadFace: `${API_BASE_URL}/faces`,
 }
@@ -49,10 +49,10 @@ const getFaceImage = async (faceId: string): Promise<string> => {
 }
 
 export interface UploadResponse {
-  id: string;
-  filename: string;
-  label: string;
-  message: string;
+    id: string;
+    filename: string;
+    label: string;
+    message: string;
 }
 
 const uploadFace = async (image: File, label: string): Promise<UploadResponse> => {
@@ -73,8 +73,31 @@ const uploadFace = async (image: File, label: string): Promise<UploadResponse> =
     return await response.json() as UploadResponse;
 }
 
+export interface FaceRecord {
+    id: string;
+    filename: string;
+    label: string;
+    created_at: string;
+}
+
+export interface GetFacesResponse {
+    count: number;
+    faces: FaceRecord[];
+}
+
+const getFaces = async (page: number, page_size: number): Promise<GetFacesResponse> => {
+    const response = await fetch(apiUrls.getFaces(page, page_size));
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch faces');
+    }
+
+    return await response.json() as GetFacesResponse;
+}
+
 export const api = {
     recognizeImage,
     getFaceImage,
     uploadFace,
+    getFaces,
 }

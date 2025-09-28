@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Response
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Response, Query
 
 from app.services import get_face_recognition_service, FaceRecognitionService
 
@@ -26,11 +26,17 @@ async def upload_face(
 
 
 @faces_router.get("/")
-async def get_faces(face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)):
+async def get_faces(
+        page: int = Query(1, ge=1),
+        page_size: int = Query(25, ge=1, le=100),
+        face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service)
+):
     try:
-        faces = await face_rec_service.get_all_faces()
+        faces = await face_rec_service.get_faces(page, page_size)
+        total_count = await face_rec_service.get_all_faces_count()
 
         return {
+            "count": total_count,
             "faces": [
                 {
                     "id": str(face.id),

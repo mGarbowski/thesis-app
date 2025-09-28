@@ -6,8 +6,11 @@ import {ImageUpload} from "../components/ImageUpload.tsx";
 import {WebcamCapture} from "../components/WebcamCapture.tsx";
 import {dataURLtoFile, generateWebcamCaptureFilename} from "../utils.ts";
 import {api} from "../api.ts";
+import {useTranslation} from "react-i18next";
 
 export const AddFacePage = () => {
+    const {t} = useTranslation();
+
     const [tabValue, setTabValue] = useState(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -41,12 +44,12 @@ export const AddFacePage = () => {
 
         try {
             const result = await api.uploadFace(file, label.trim());
-            setSuccess(`Face uploaded successfully - ${result.filename}`);
+            setSuccess(`${t("faceUploadedSuccessfully")} - ${result.filename}`);
             setSelectedFile(null);
             setCapturedImage(null);
             setLabel('');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred during upload');
+            setError(err instanceof Error ? err.message : t("anErrorOccurredDuringUpload"));
         } finally {
             setIsLoading(false);
         }
@@ -55,13 +58,13 @@ export const AddFacePage = () => {
     return (
         <Box>
             <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-                Add new face to recognition database
+                {t("addNewFace")}
             </Typography>
 
             <Paper sx={{mb: 3}}>
                 <Tabs value={tabValue} onChange={handleTabChange} centered>
-                    <Tab label="Upload Image" icon={<Upload/>}/>
-                    <Tab label="Webcam caputre" icon={<CameraAlt/>}/>
+                    <Tab label={t("uploadImage")} icon={<Upload/>}/>
+                    <Tab label={t("webcamCapture")} icon={<CameraAlt/>}/>
                 </Tabs>
 
                 <TabPanel value={tabValue} index={0}>
@@ -76,13 +79,13 @@ export const AddFacePage = () => {
             <Paper sx={{p: 3, mx: "auto"}}>
                 <Box sx={{maxWidth: 400, mx: "auto"}}>
                     <TextField
-                        label="Label"
+                        label={t("faceLabel")}
                         value={label}
                         onChange={(e) => setLabel(e.target.value)}
                         margin="normal"
                         required
                         disabled={isLoading}
-                        helperText="Enter a label to identify this face"
+                        helperText={t("faceLabelHelperText")}
                         variant="outlined"
                         fullWidth
                     />
@@ -94,7 +97,7 @@ export const AddFacePage = () => {
                         sx={{height: 48, fontSize: 16}}
                         fullWidth
                     >
-                        {isLoading ? <CircularProgress size={24}/> : 'Upload Face'}
+                        {isLoading ? <CircularProgress size={24}/> : t("uploadFace")}
                     </Button>
                 </Box>
 
