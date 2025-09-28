@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { CameraAlt, Search, Upload } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
@@ -9,14 +9,14 @@ import {
 	Tabs,
 	Typography,
 } from "@mui/material";
-import { CameraAlt, Search, Upload } from "@mui/icons-material";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { api } from "../api.ts";
 import { ImageUpload } from "../components/ImageUpload.tsx";
 import { RecognitionResultDisplay } from "../components/RecognitionResultDisplay.tsx";
+import { TabPanel } from "../components/TabPanel.tsx";
 import { WebcamCapture } from "../components/WebcamCapture.tsx";
 import { dataURLtoFile, generateWebcamCaptureFilename } from "../utils.ts";
-import { api } from "../api.ts";
-import { TabPanel } from "../components/TabPanel.tsx";
-import { useTranslation } from "react-i18next";
 
 export const RecognizePage = () => {
 	const { t } = useTranslation();

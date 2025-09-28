@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { CameraAlt, Upload } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
@@ -10,13 +10,13 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { CameraAlt, Upload } from "@mui/icons-material";
-import { TabPanel } from "../components/TabPanel.tsx";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { api } from "../api.ts";
 import { ImageUpload } from "../components/ImageUpload.tsx";
+import { TabPanel } from "../components/TabPanel.tsx";
 import { WebcamCapture } from "../components/WebcamCapture.tsx";
 import { dataURLtoFile, generateWebcamCaptureFilename } from "../utils.ts";
-import { api } from "../api.ts";
-import { useTranslation } from "react-i18next";
 
 export const AddFacePage = () => {
 	const { t } = useTranslation();

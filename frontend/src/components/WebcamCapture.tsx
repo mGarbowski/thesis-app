@@ -1,8 +1,8 @@
-import { useRef } from "react";
-import Webcam from "react-webcam";
-import { Box, Button } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import Webcam from "react-webcam";
 
 interface WebcamCaptureProps {
 	capturedImageUrl: string | null;

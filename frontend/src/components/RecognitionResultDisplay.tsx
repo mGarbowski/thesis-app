@@ -1,5 +1,3 @@
-import { api, type RecognizeResponse } from "../api.ts";
-import { useEffect, useState } from "react";
 import {
 	Alert,
 	Card,
@@ -9,7 +7,9 @@ import {
 	Paper,
 	Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { api, type RecognizeResponse } from "../api.ts";
 
 interface RecognitionResultDisplayProps {
 	recognitionResult: RecognizeResponse;
@@ -32,7 +32,7 @@ export const RecognitionResultDisplay = (
 				setMatchedImageUrl(null);
 				setError(t("failedToLoadMatchedImage"));
 			});
-	}, [recognitionResult.matched_record.id]);
+	}, [recognitionResult.matched_record.id, t]);
 
 	return (
 		<Paper sx={{ p: 3 }}>

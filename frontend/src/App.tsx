@@ -1,12 +1,4 @@
 import {
-	BrowserRouter as Router,
-	Link,
-	Navigate,
-	Route,
-	Routes,
-	useLocation,
-} from "react-router-dom";
-import {
 	AppBar,
 	Box,
 	Button,
@@ -14,10 +6,18 @@ import {
 	Toolbar,
 	Typography,
 } from "@mui/material";
-import { RecognizePage } from "./pages/RecognizePage.tsx";
+import { useTranslation } from "react-i18next";
+import {
+	Link,
+	Navigate,
+	Route,
+	BrowserRouter as Router,
+	Routes,
+	useLocation,
+} from "react-router-dom";
 import { AddFacePage } from "./pages/AddFacePage.tsx";
 import { GalleryPage } from "./pages/GalleryPage.tsx";
-import { useTranslation } from "react-i18next";
+import { RecognizePage } from "./pages/RecognizePage.tsx";
 
 const Navigation = () => {
 	const location = useLocation();

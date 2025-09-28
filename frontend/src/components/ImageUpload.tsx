@@ -1,6 +1,6 @@
-import { type ChangeEvent, useRef } from "react";
-import { Box, Button, Typography } from "@mui/material";
 import { Upload } from "@mui/icons-material";
+import { Box, Button, Typography } from "@mui/material";
+import { type ChangeEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ImageUploadProps {

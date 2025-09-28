@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Pagination, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { api, apiUrls, type FaceRecord } from "../api";
 import { useTranslation } from "react-i18next";
+import { api, apiUrls, type FaceRecord } from "../api";
 
 export const GalleryPage = () => {
 	const { t } = useTranslation();
