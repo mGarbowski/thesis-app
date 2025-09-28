@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from io import BytesIO
+from typing import Sequence
 from uuid import UUID
 
 from fastapi import Depends, UploadFile
@@ -26,7 +27,7 @@ class FaceRecognitionService:
         self.face_embedding_service = face_embedding_service
         self.db = db
 
-    def _to_pil_image(self, image_bytes: bytes) -> Image:
+    def _to_pil_image(self, image_bytes: bytes) -> Image.Image:
         return Image.open(BytesIO(image_bytes)).convert("RGB")
 
     async def add_face_image(self, file: UploadFile, label: str) -> FaceImage:
@@ -48,7 +49,7 @@ class FaceRecognitionService:
 
         return face_image
 
-    async def get_faces(self, page: int, page_size: int) -> list[FaceImage]:
+    async def get_faces(self, page: int, page_size: int) -> Sequence[FaceImage]:
         offset = (page - 1) * page_size
 
         result = await self.db.execute(

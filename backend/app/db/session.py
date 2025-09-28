@@ -8,9 +8,9 @@ from app.config import settings
 engine = create_async_engine(
     settings.database_url, echo=settings.enable_sqlalchemy_logging
 )
-async_session = sessionmaker(engine, class_=AsyncSession)
+async_session = sessionmaker(engine, class_=AsyncSession)  # type: ignore
 
 
-async def get_db() -> AsyncGenerator[Any, Any]:
-    async with async_session() as session:
+async def get_db() -> AsyncGenerator[AsyncSession, Any]:
+    async with async_session() as session:  # type: ignore
         yield session
