@@ -10,4 +10,4 @@ class Settings(BaseSettings):
     facenet_weights_key: str = "model_state_dict"
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

@@ -1,0 +1,15 @@
+{
+	"files": {
+		"includes": ["src/**/*.ts", "src/**/*.tsx"]
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
+		}
+	}
+}

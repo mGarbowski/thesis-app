@@ -2,20 +2,18 @@ from typing import Protocol
 
 import numpy as np
 import torch
-from PIL.Image import Image
 from facenet_pytorch import MTCNN, InceptionResnetV1
+from PIL.Image import Image
 from torch import Tensor
 
-from app.logging import logger
 from app.config import settings
+from app.logging import logger
 
 
 class FaceEmbeddingService(Protocol):
-    def get_cropped_image(self, image: Image) -> Tensor:
-        ...
+    def get_cropped_image(self, image: Image) -> Tensor: ...
 
-    def compute_feature_vector(self, cropped_image: Tensor) -> np.ndarray:
-        ...
+    def compute_feature_vector(self, cropped_image: Tensor) -> np.ndarray: ...
 
 
 class TorchFaceEmbeddingService(FaceEmbeddingService):
@@ -27,14 +25,22 @@ class TorchFaceEmbeddingService(FaceEmbeddingService):
         return self.detector(image)
 
     def compute_feature_vector(self, cropped_image: Tensor) -> np.ndarray:
-        return self.feature_extractor(cropped_image.unsqueeze(0)).detach().cpu().numpy().flatten()
+        return (
+            self.feature_extractor(cropped_image.unsqueeze(0))
+            .detach()
+            .cpu()
+            .numpy()
+            .flatten()
+        )
 
 
 def get_device() -> torch.device:
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def load_feature_extractor(weights_path: str | None, weights_key: str, device: torch.device) -> InceptionResnetV1:
+def load_feature_extractor(
+    weights_path: str | None, weights_key: str, device: torch.device
+) -> InceptionResnetV1:
     model = InceptionResnetV1(pretrained="vggface2")
     if weights_path is not None:
         logger.info(f"Loading facenet weights from: {weights_path}")
@@ -62,7 +68,9 @@ logger.info(f"Using device: {device}")
 
 _detector = load_face_detector(device)
 
-_feature_extractor = load_feature_extractor(settings.facenet_weights_path, settings.facenet_weights_key, device)
+_feature_extractor = load_feature_extractor(
+    settings.facenet_weights_path, settings.facenet_weights_key, device
+)
 
 _face_embedding_service = TorchFaceEmbeddingService(_detector, _feature_extractor)
 

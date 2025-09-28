@@ -67,14 +67,29 @@ def process_dataset(config: Configuration, api_client: ApiClient):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Seed the database with face images from the LFW dataset')
-    parser.add_argument('--dataset_path', type=str, required=True, help='Path to the dataset directory')
-    parser.add_argument('--api_url', type=str, default='http://localhost:8000', help='Base URL of the backend API')
-    parser.add_argument('--num_entries', type=int, default=1000, help='Number of entries to create')
+    parser = argparse.ArgumentParser(
+        description="Seed the database with face images from the LFW dataset"
+    )
+    parser.add_argument(
+        "--dataset_path", type=str, required=True, help="Path to the dataset directory"
+    )
+    parser.add_argument(
+        "--api_url",
+        type=str,
+        default="http://localhost:8000",
+        help="Base URL of the backend API",
+    )
+    parser.add_argument(
+        "--num_entries", type=int, default=1000, help="Number of entries to create"
+    )
 
     args = parser.parse_args()
 
-    config = Configuration(dataset_path=args.dataset_path, api_url=args.api_url, num_entries=args.num_entries)
+    config = Configuration(
+        dataset_path=args.dataset_path,
+        api_url=args.api_url,
+        num_entries=args.num_entries,
+    )
 
     api_client = ApiClient(base_url=config.api_url)
     process_dataset(config, api_client)

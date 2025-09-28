@@ -18,6 +18,28 @@ distribution = false
 dev = { shell = "fastapi dev", help = "Run the development server with auto-reload" }
 prod = { shell = "uvicorn app.main:app --log-config logging_config.yml", help = "Run the production server" }
 test = { shell = "pytest", help = "Run the test suite" }
+cov = { shell = "pytest --cov=app", help = "Run the test suite with coverage report" }
+
+# Static analysis
+_black = "black ."
+_black_check = "black --check ."
+_isort = "isort ."
+_isort_check = "isort . --check-only"
+_pyright_check = "pyright"
+fmt = { composite = ["_black", "_isort"], help = "Format code and sort imports" }
+check = { composite = ["_black_check", "_isort_check", "_pyright_check"], help = "Check formatting and types" }
+
+# Code metrics
+metrics_raw_app = { shell = "radon raw app --summary", help = "Raw code metrics for the app directory" }
+metrics_raw_tests = { shell = "radon raw tests --summary", help = "Raw code metrics for the tests directory" }
+metrics_cc_app = { shell = "radon cc app --average", help = "Cyclomatic complexity for the app directory" }
+metrics_cc_tests = { shell = "radon cc tests --average", help = "Cyclomatic complexity for the tests directory" }
+metrics_all = { composite = [
+    "metrics_raw_app",
+    "metrics_raw_tests",
+    "metrics_cc_app",
+    "metrics_cc_tests"
+], help = "Show all code metrics" }
 
 [dependency-groups]
 dev = [
@@ -25,4 +47,34 @@ dev = [
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
     "httpx>=0.28.1",
+    "pytest-cov>=7.0.0",
+    "black>=25.9.0",
+    "isort>=6.0.1",
+    "pyright>=1.1.405",
+    "radon>=6.0.1",
 ]
+
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+pythonpath = ["app"]
+
+[tool.pyright]
+include = ["app"]
+exclude = [
+    "**/__pycache__",
+    "tests",
+]
+
+typeCheckingMode = "basic"      # Use basic type checking (can be set to "strict" for stricter checks)
+reportMissingImports = "error"  # Report missing imports as errors
+reportMissingTypeStubs = false  # Do not require type stubs for third-party libraries
+reportUnusedImport = "error"
+reportUnusedVariable = "error"
+reportUnusedFunction = "error"
+
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+venvPath = ".venv"
