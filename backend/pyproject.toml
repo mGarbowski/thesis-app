@@ -47,13 +47,12 @@ dev = [
 profile = "black"
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["app"]
 
 [tool.pyright]
-include = ["src"]
+include = ["app"]
 exclude = [
     "**/__pycache__",
-    "notebooks",
     "tests",
 ]
 
