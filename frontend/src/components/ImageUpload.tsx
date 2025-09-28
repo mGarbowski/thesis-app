@@ -1,6 +1,7 @@
 import {type ChangeEvent, useRef} from 'react';
 import {Box, Button, Typography} from '@mui/material';
 import {Upload} from '@mui/icons-material';
+import {useTranslation} from "react-i18next";
 
 interface ImageUploadProps {
     selectedFile: File | null;
@@ -9,6 +10,7 @@ interface ImageUploadProps {
 
 export const ImageUpload = (props: ImageUploadProps) => {
     const {selectedFile, onUpload} = props;
+    const {t} = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +35,7 @@ export const ImageUpload = (props: ImageUploadProps) => {
                 startIcon={<Upload/>}
                 sx={{mb: 2}}
             >
-                Choose Image File
+                {t("chooseFile")}
             </Button>
             {selectedFile && (
                 <SelectedFileDisplay file={selectedFile}/>
@@ -48,16 +50,17 @@ interface SelectedFileDisplayProps {
 
 const SelectedFileDisplay = (props: SelectedFileDisplayProps) => {
     const {file} = props;
+    const {t} = useTranslation();
 
     return (
         <Box mt={2}>
             <Typography variant="body2" color="text.secondary">
-                Selected: {file.name}
+                {t("selected")}: {file.name}
             </Typography>
             <Box mt={2}>
                 <img
                     src={URL.createObjectURL(file)}
-                    alt="Selected"
+                    alt={t("selected")}
                     style={{maxWidth: '100%', maxHeight: '300px', objectFit: 'contain'}}
                 />
             </Box>

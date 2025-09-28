@@ -7,9 +7,12 @@ import {WebcamCapture} from "../components/WebcamCapture.tsx";
 import {dataURLtoFile, generateWebcamCaptureFilename} from "../utils.ts";
 import {api} from "../api.ts";
 import {TabPanel} from '../components/TabPanel.tsx';
+import {useTranslation} from "react-i18next";
 
 
 export const RecognizePage = () => {
+    const {t} = useTranslation()
+
     const [tabValue, setTabValue] = useState(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -58,13 +61,13 @@ export const RecognizePage = () => {
     return (
         <Box>
             <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-                Face Recognition
+                {t("faceRecognition")}
             </Typography>
 
             <Paper sx={{mb: 3}}>
                 <Tabs value={tabValue} onChange={handleTabChange} centered>
-                    <Tab label="Upload Image" icon={<Upload/>}/>
-                    <Tab label="Webcam Capture" icon={<CameraAlt/>}/>
+                    <Tab label={t("uploadImage")} icon={<Upload/>}/>
+                    <Tab label={t("webcamCapture")} icon={<CameraAlt/>}/>
                 </Tabs>
 
                 <TabPanel value={tabValue} index={0}>
@@ -84,7 +87,7 @@ export const RecognizePage = () => {
                     disabled={!canRecognize || isLoading}
                     startIcon={isLoading ? <CircularProgress size={20}/> : <Search/>}
                 >
-                    {isLoading ? 'Recognizing...' : 'Recognize Face'}
+                    {isLoading ? `${t("recognizing")}...` : t("recognizeFace")}
                 </Button>
             </Box>
 
