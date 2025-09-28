@@ -37,6 +37,7 @@ def get_device() -> torch.device:
 def load_feature_extractor(weights_path: str | None, weights_key: str, device: torch.device) -> InceptionResnetV1:
     model = InceptionResnetV1(pretrained="vggface2")
     if weights_path is not None:
+        logger.info(f"Loading facenet weights from: {weights_path}")
         state_dict = torch.load(weights_path, weights_only=True)
         if weights_key in state_dict:
             state_dict = state_dict[weights_key]
