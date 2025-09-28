@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: face_recognition_db_prod
+    environment:
+      POSTGRES_DB: face_recognition
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - face_recognition_db_prod_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    container_name: face_recognition_backend_prod
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@face_recognition_db_prod:5432/face_recognition
+      CORS_ALLOWED_ORIGIN: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  face_recognition_db_prod_data:
