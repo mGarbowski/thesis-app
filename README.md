@@ -14,6 +14,7 @@ Mikołaj Garbowski - element pracy dyplomowej inżynierskiej
   * dodanie do bazy zdjęcia z dysku
   * wyświetlenie najbliższego dopasowania do twarzy ze zdjęcia z kamerki internetowej
   * wyświetlenie najbliższego dopasowania do twarzy ze zdjęcia z dysku
+  * przeglądanie zdjęć zapisanych w bazie
 
   
 ## Instalacja i uruchomienie
@@ -31,7 +32,6 @@ docker compose up --build
 ```
 
 Aplikacja będzie dostępna pod adresem http://localhost:8000
-
 
 ### Uruchomienie w trybie deweloperskim
 
@@ -73,10 +73,36 @@ Uruchomienie aplikacji backend
 pdm dev
 ```
 
+Automatycznie wygenerowana dokumentacja API (Swagger UI) będzie dostępna pod adresem http://localhost:8000/docs
+
 Uruchomienie testów
 
 ```shell
 pdm test
+```
+
+Uruchomienie testów z raportem pokrycia kodu
+
+```shell
+pdm cov
+```
+
+Uruchomienie formatera
+
+```shell
+pdm fmt
+```
+
+Sprawdzenie formatowania i typów
+
+```shell
+pdm check
+```
+
+Metryki kodu (liczba linijek, złożoność cyklomatyczna itp.)
+
+```shell
+pdm metrics_all
 ```
 
 Pozostałe komendy

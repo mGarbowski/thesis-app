@@ -29,6 +29,18 @@ _pyright_check = "pyright"
 fmt = { composite = ["_black", "_isort"], help = "Format code and sort imports" }
 check = { composite = ["_black_check", "_isort_check", "_pyright_check"], help = "Check formatting and types" }
 
+# Code metrics
+metrics_raw_app = { shell = "radon raw app --summary", help = "Raw code metrics for the app directory" }
+metrics_raw_tests = { shell = "radon raw tests --summary", help = "Raw code metrics for the tests directory" }
+metrics_cc_app = { shell = "radon cc app --average", help = "Cyclomatic complexity for the app directory" }
+metrics_cc_tests = { shell = "radon cc tests --average", help = "Cyclomatic complexity for the tests directory" }
+metrics_all = { composite = [
+    "metrics_raw_app",
+    "metrics_raw_tests",
+    "metrics_cc_app",
+    "metrics_cc_tests"
+], help = "Show all code metrics" }
+
 [dependency-groups]
 dev = [
     "requests>=2.32.5",
