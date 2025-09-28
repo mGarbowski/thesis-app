@@ -21,13 +21,13 @@ test = { shell = "pytest", help = "Run the test suite" }
 cov = { shell = "pytest --cov=app", help = "Run the test suite with coverage report" }
 
 # Static analysis
-black = "black ."
-black_check = "black --check ."
-isort = "isort ."
-isort_check = "isort . --check-only"
-pyright = "pyright"
-fmt = { composite = ["black", "isort"] }
-fmt_check = { composite = ["black_check", "isort_check", "pyright"] }
+_black = "black ."
+_black_check = "black --check ."
+_isort = "isort ."
+_isort_check = "isort . --check-only"
+_pyright_check = "pyright"
+fmt = { composite = ["_black", "_isort"], help = "Format code and sort imports" }
+check = { composite = ["_black_check", "_isort_check", "_pyright_check"], help = "Check formatting and types" }
 
 [dependency-groups]
 dev = [
