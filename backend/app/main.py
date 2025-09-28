@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import faces_router
 from app.config import settings
+from app.logging import logger
 
 app = FastAPI()
 
@@ -15,3 +16,5 @@ app.add_middleware(
 )
 
 app.include_router(faces_router, prefix="/api/faces")
+
+logger.info(f"Application settings: {settings}")
