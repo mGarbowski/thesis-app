@@ -2,6 +2,7 @@ import {BrowserRouter as Router, Link, Navigate, Route, Routes, useLocation} fro
 import {AppBar, Box, Button, Container, Toolbar, Typography} from '@mui/material';
 import {RecognizePage} from "./pages/RecognizePage.tsx";
 import {AddFacePage} from "./pages/AddFacePage.tsx";
+import {GalleryPage} from "./pages/GalleryPage.tsx";
 
 const Navigation = () => {
     const location = useLocation();
@@ -29,6 +30,15 @@ const Navigation = () => {
                     >
                         Recognize
                     </Button>
+                    <Button
+                        color="inherit"
+                        component={Link}
+                        to="/gallery"
+                        variant={location.pathname === '/gallery' ? 'outlined' : 'text'}
+                    >
+                        Gallery
+                    </Button>
+
                 </Box>
             </Toolbar>
         </AppBar>
@@ -44,6 +54,7 @@ const App = () => {
                     <Route path="/" element={<Navigate to="/recognize" replace/>}/>
                     <Route path="/add" element={<AddFacePage/>}/>
                     <Route path="/recognize" element={<RecognizePage/>}/>
+                    <Route path="/gallery" element={<GalleryPage/>}/>
                 </Routes>
             </Container>
         </Router>
