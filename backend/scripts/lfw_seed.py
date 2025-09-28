@@ -2,6 +2,16 @@
 (or another dataset with a similar structure).
 
 It sends REST API requests to the backend server to create person entries.
+
+The dataset directory should have the following structure:
+- dataset/
+    - Person_A/
+        - image1.jpg
+        - image2.jpg
+    - Person_B/
+        - image1.jpg
+        - image2.jpg
+    - ...
 """
 
 import argparse
