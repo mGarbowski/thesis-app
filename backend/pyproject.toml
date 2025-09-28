@@ -17,8 +17,12 @@ distribution = false
 [tool.pdm.scripts]
 dev = { shell = "fastapi dev", help = "Run the development server with auto-reload" }
 prod = { shell = "fastapi run", help = "Run the production server" }
+test = { shell = "pytest", help = "Run the test suite" }
 
 [dependency-groups]
 dev = [
     "requests>=2.32.5",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "httpx>=0.28.1",
 ]

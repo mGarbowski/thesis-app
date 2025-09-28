@@ -73,6 +73,12 @@ Uruchomienie aplikacji backend
 pdm dev
 ```
 
+Uruchomienie testów
+
+```shell
+pdm test
+```
+
 Pozostałe komendy
 
 ```shell
