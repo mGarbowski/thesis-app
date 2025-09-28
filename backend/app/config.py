@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     database_url: str
     cors_allowed_origin: str
     enable_sqlalchemy_logging: bool = False
+    facenet_weights_path: str | None = None
+    facenet_weights_key: str = "model_state_dict"
 
 
 settings = Settings()
