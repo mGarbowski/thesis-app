@@ -21,3 +21,11 @@ Do zbadania
 * Czy da radę uruchomić modele detekcji i ekstrakcji cech w przeglądarce
 * Możliwość działania w czasie rzeczywistym
 
+
+## Instrukcja uruchomienia
+
+```shell
+docker compose up --build
+```
+
+Aplikacja będzie dostępna pod adresem http://localhost:8000
