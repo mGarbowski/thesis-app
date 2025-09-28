@@ -1,103 +1,110 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = "http://localhost:8000/api";
 
 export const apiUrls = {
-    recognize: `${API_BASE_URL}/faces/recognize`,
-    getFaces: (page: number, page_size: number) => `${API_BASE_URL}/faces/?page=${page}&page_size=${page_size}`,
-    getImage: (id: string) => `${API_BASE_URL}/faces/${id}/image`,
-    uploadFace: `${API_BASE_URL}/faces`,
-}
+	recognize: `${API_BASE_URL}/faces/recognize`,
+	getFaces: (page: number, page_size: number) =>
+		`${API_BASE_URL}/faces/?page=${page}&page_size=${page_size}`,
+	getImage: (id: string) => `${API_BASE_URL}/faces/${id}/image`,
+	uploadFace: `${API_BASE_URL}/faces`,
+};
 
 export type EmbeddingVector = number[];
 
 export interface RecognizeResponse {
-    cosine_similarity: number;
-    cosine_distance: number;
-    search_vector: EmbeddingVector;
-    matched_record: {
-        id: string;
-        filename: string;
-        label: string;
-        created_at: string;
-        feature_vector: EmbeddingVector;
-    }
+	cosine_similarity: number;
+	cosine_distance: number;
+	search_vector: EmbeddingVector;
+	matched_record: {
+		id: string;
+		filename: string;
+		label: string;
+		created_at: string;
+		feature_vector: EmbeddingVector;
+	};
 }
 
 const recognizeImage = async (image: File): Promise<RecognizeResponse> => {
-    const formData = new FormData();
-    formData.append('file', image);
-    const response = await fetch(apiUrls.recognize, {
-        method: 'POST',
-        body: formData,
-    });
+	const formData = new FormData();
+	formData.append("file", image);
+	const response = await fetch(apiUrls.recognize, {
+		method: "POST",
+		body: formData,
+	});
 
-    if (!response.ok) {
-        throw new Error('Recognition failed');
-    }
+	if (!response.ok) {
+		throw new Error("Recognition failed");
+	}
 
-    return await response.json() as RecognizeResponse;
-}
+	return (await response.json()) as RecognizeResponse;
+};
 
 const getFaceImage = async (faceId: string): Promise<string> => {
-    const response = await fetch(apiUrls.getImage(faceId));
+	const response = await fetch(apiUrls.getImage(faceId));
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch face image');
-    }
+	if (!response.ok) {
+		throw new Error("Failed to fetch face image");
+	}
 
-    const imageBlob = await response.blob();
-    return URL.createObjectURL(imageBlob);
-}
+	const imageBlob = await response.blob();
+	return URL.createObjectURL(imageBlob);
+};
 
 export interface UploadResponse {
-    id: string;
-    filename: string;
-    label: string;
-    message: string;
+	id: string;
+	filename: string;
+	label: string;
+	message: string;
 }
 
-const uploadFace = async (image: File, label: string): Promise<UploadResponse> => {
-    const formData = new FormData();
-    formData.append('file', image);
-    formData.append('label', label);
+const uploadFace = async (
+	image: File,
+	label: string,
+): Promise<UploadResponse> => {
+	const formData = new FormData();
+	formData.append("file", image);
+	formData.append("label", label);
 
-    const response = await fetch(apiUrls.uploadFace, {
-        method: 'POST',
-        body: formData,
-    });
+	const response = await fetch(apiUrls.uploadFace, {
+		method: "POST",
+		body: formData,
+	});
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Upload failed');
-    }
+	if (!response.ok) {
+		const errorData = await response.json();
+		throw new Error(errorData.detail || "Upload failed");
+	}
 
-    return await response.json() as UploadResponse;
-}
+	return (await response.json()) as UploadResponse;
+};
 
 export interface FaceRecord {
-    id: string;
-    filename: string;
-    label: string;
-    created_at: string;
+	id: string;
+	filename: string;
+	label: string;
+	created_at: string;
 }
 
 export interface GetFacesResponse {
-    count: number;
-    faces: FaceRecord[];
+	count: number;
+	faces: FaceRecord[];
 }
 
-const getFaces = async (page: number, page_size: number): Promise<GetFacesResponse> => {
-    const response = await fetch(apiUrls.getFaces(page, page_size));
+const getFaces = async (
+	page: number,
+	page_size: number,
+): Promise<GetFacesResponse> => {
+	const response = await fetch(apiUrls.getFaces(page, page_size));
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch faces');
-    }
+	if (!response.ok) {
+		throw new Error("Failed to fetch faces");
+	}
 
-    return await response.json() as GetFacesResponse;
-}
+	return (await response.json()) as GetFacesResponse;
+};
 
 export const api = {
-    recognizeImage,
-    getFaceImage,
-    uploadFace,
-    getFaces,
-}
+	recognizeImage,
+	getFaceImage,
+	uploadFace,
+	getFaces,
+};
