@@ -106,3 +106,21 @@ Uruchomienie aplikacji frontend
 ```shell
 npm run dev
 ```
+
+Zbudowanie aplikacji
+
+```shell
+npm run build
+```
+
+Uruchomienie formatera i lintera
+
+```shell
+npm run fmt
+```
+
+Sprawdzenie formatowania i lintera
+
+```shell
+npm run check
+```
