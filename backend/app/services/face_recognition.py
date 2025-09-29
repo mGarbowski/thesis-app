@@ -1,3 +1,9 @@
+"""Service for face recognition operations.
+
+- Uses FaceEmbeddingService to process images.
+- Handles database interactions.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,6 +22,8 @@ from app.services.face_embedding import FaceEmbeddingService, get_face_embedding
 
 @dataclass
 class RecognitionResult:
+    """Result of face recognition search."""
+
     face_image: FaceImage
     cosine_similarity: float
     cosine_distance: float
@@ -23,14 +31,18 @@ class RecognitionResult:
 
 
 class FaceRecognitionService:
+    """Application service for face recognition operations."""
+
     def __init__(self, face_embedding_service: FaceEmbeddingService, db: AsyncSession):
         self.face_embedding_service = face_embedding_service
         self.db = db
 
     def _to_pil_image(self, image_bytes: bytes) -> Image.Image:
+        """Create PIL Image from raw image data."""
         return Image.open(BytesIO(image_bytes)).convert("RGB")
 
     async def add_face_image(self, file: UploadFile, label: str) -> FaceImage:
+        """Add a new face image to the database."""
         image_data = await file.read()
         image = self._to_pil_image(image_data)
         cropped_img = self.face_embedding_service.get_cropped_image(image)
@@ -50,6 +62,10 @@ class FaceRecognitionService:
         return face_image
 
     async def get_faces(self, page: int, page_size: int) -> Sequence[FaceImage]:
+        """Retrieve paginated list of face images.
+
+        Lightweight, no image data included.
+        """
         offset = (page - 1) * page_size
 
         result = await self.db.execute(
@@ -61,16 +77,30 @@ class FaceRecognitionService:
         return result.scalars().all()
 
     async def get_all_faces_count(self) -> int:
+        """Get total count of face images in the database.
+
+        For pagination purposes.
+        """
         result = await self.db.execute(select(text("COUNT(*)")).select_from(FaceImage))
         return result.scalar_one()
 
     async def get_face_by_id(self, id: str) -> FaceImage:
+        """Retrieve a face image record by its ID."""
         result = await self.db.execute(
             select(FaceImage).where(FaceImage.id == UUID(id))
         )
         return result.scalar_one_or_none()
 
     async def find_closest_face(self, file: UploadFile) -> RecognitionResult | None:
+        """Find the closest matching face in the database for the uploaded image.
+
+        Returns the closest face in terms of cosine similarity.
+        Search uses pgvector vector index for efficiency.
+        According to pgvector docs, the results are approximate and may not be 100% accurate
+        as a tradeoff for speed.
+
+        https://github.com/pgvector/pgvector?tab=readme-ov-file#indexing
+        """
         image_data = await file.read()
         image = self._to_pil_image(image_data)
         cropped_img = self.face_embedding_service.get_cropped_image(image)
@@ -108,4 +138,5 @@ class FaceRecognitionService:
 def get_face_recognition_service(
     face_embedding_service=Depends(get_face_embedding_service), db=Depends(get_db)
 ) -> FaceRecognitionService:
+    """Dependency injector for FaceRecognitionService."""
     return FaceRecognitionService(face_embedding_service, db)

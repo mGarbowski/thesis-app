@@ -1,7 +1,17 @@
+"""Application configuration settings.
+
+Settings object can be imported and used throughout the application.
+"""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Application configuration settings.
+
+    Settings are loaded from environment variables or a .env file.
+    """
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="")
     database_url: str
     cors_allowed_origin: str

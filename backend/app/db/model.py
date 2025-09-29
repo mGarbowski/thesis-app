@@ -1,3 +1,5 @@
+"""ORM models."""
+
 import uuid
 
 from pgvector.sqlalchemy import Vector
@@ -10,6 +12,8 @@ from .base import Base
 
 
 class FaceImage(Base):
+    """Face image files with metadata and feature vectors for face recognition."""
+
     __tablename__ = "face_images"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

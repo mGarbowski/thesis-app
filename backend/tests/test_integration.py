@@ -1,3 +1,10 @@
+"""Integration tests for the face recognition API.
+
+Requires test database to be running.
+Tests are using a separate database for testing that is recreated for each test run (if requested).
+Runs the entire FastAPI application and connects to PostgreSQL database.
+"""
+
 from typing import Any
 from uuid import UUID
 
@@ -28,6 +35,7 @@ async def upload_face(client: AsyncClient, filename: str, label: str) -> UUID:
 async def check_face_in_list(
     client: AsyncClient, person_id: UUID, label: str, filename: str
 ):
+    """Check that the uploaded face is in the list of faces."""
     response = await client.get("/api/faces/")
     assert response.status_code == 200
     data = response.json()
@@ -40,6 +48,7 @@ async def check_face_in_list(
 
 
 async def check_download_image(client: AsyncClient, person_id: UUID):
+    """Verify that the image for given person ID can be downloaded."""
     response = await client.get(f"/api/faces/{person_id}/image")
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/jpeg"
@@ -47,6 +56,7 @@ async def check_download_image(client: AsyncClient, person_id: UUID):
 
 
 async def recognize_face(client: AsyncClient, filename: str) -> dict[str, Any]:
+    """Perform face recognition ib the given image."""
     with open(f"tests/assets/{filename}", "rb") as f:
         response = await client.post(
             "/api/faces/recognize",

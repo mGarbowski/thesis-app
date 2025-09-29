@@ -1,3 +1,10 @@
+"""Main application entry point for the FastAPI server.
+
+- FastAPI app object
+- API router includes
+- CORS middleware setup
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

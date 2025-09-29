@@ -1,7 +1,9 @@
-"""This is a script for seeding the database with face images from the LFW dataset
+"""Script for seeding the database with data from the LFW dataset
 (or another dataset with a similar structure).
 
 It sends REST API requests to the backend server to create person entries.
+
+Use --help for usage information.
 
 The dataset directory should have the following structure:
 - dataset/
@@ -23,12 +25,16 @@ import requests
 
 @dataclass
 class Configuration:
+    """Configuration for the seeding script."""
+
     dataset_path: str
     api_url: str
     num_entries: int
 
 
 class ApiClient:
+    """Client for interacting with the backend API."""
+
     upload_endpoint = "/api/faces/"
 
     def __init__(self, base_url: str):
@@ -36,6 +42,7 @@ class ApiClient:
         self.upload_url = f"{self.base_url}{self.upload_endpoint}"
 
     def create_face_entry(self, image_path: str, label: str):
+        """Upload a face image with label to the backend API."""
         with open(image_path, "rb") as img_file:
             files = {"file": (image_path, img_file, "image/jpeg")}
             data = {"label": label}
@@ -45,6 +52,8 @@ class ApiClient:
 
 
 def process_dataset(config: Configuration, api_client: ApiClient):
+    """Upload one image per person from the dataset to the backend API."""
+
     num_uploaded = 0
 
     for face_dir in os.listdir(config.dataset_path):

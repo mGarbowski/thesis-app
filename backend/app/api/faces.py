@@ -1,3 +1,5 @@
+"""API endpoints for face image management and recognition."""
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -20,6 +22,11 @@ async def upload_face(
     label: str = Form(...),
     face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
+    """Upload a new face image with metadata.
+
+    Images are processed to extract feature vectors for recognition.
+    """
+
     try:
         face_image = await face_rec_service.add_face_image(file, label)
 
@@ -40,6 +47,11 @@ async def get_faces(
     page_size: int = Query(25, ge=1, le=100),
     face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
+    """Retrieve paginated list of face images with metadata.
+
+    Lightweight, no image data included.
+    """
+
     try:
         faces = await face_rec_service.get_faces(page, page_size)
         total_count = await face_rec_service.get_all_faces_count()
@@ -65,6 +77,7 @@ async def get_face_image(
     face_id: str,
     face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
+    """Retrieve the raw image data for a specific face image by ID."""
     try:
         face = await face_rec_service.get_face_by_id(face_id)
 
@@ -84,6 +97,8 @@ async def recognize(
     file: UploadFile = File(...),
     face_rec_service: FaceRecognitionService = Depends(get_face_recognition_service),
 ):
+    """Find the closest matching face in the database for the uploaded image."""
+
     try:
         result = await face_rec_service.find_closest_face(file)
 
