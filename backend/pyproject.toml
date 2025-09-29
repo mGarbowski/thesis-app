@@ -1,7 +1,7 @@
 [project]
-name = "backend"
+name = "setosa-backend"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = "Backend for Setosa, a simple face recognition system demo for my BE thesis."
 authors = [
     { name = "Mikołaj Garbowski", email = "mikolaj.garbowski@gmail.com" },
 ]
