@@ -18,5 +18,4 @@ COPY app app
 ENV VIRTUAL_ENV=/srv/.venv
 ENV PATH="/srv/.venv/bin:$PATH"
 
-# Run directly with uvicorn (no uv run needed since venv is activated)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging_config.yml"]
