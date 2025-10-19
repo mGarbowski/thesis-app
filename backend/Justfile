@@ -1,12 +1,16 @@
-#### App run modes ####
+#### Installation ####
+install:
+    uv sync
+
+#### Running the application ####
 
 # Run the development server with auto-reload
 dev:
-    fastapi dev
+    uv run fastapi dev
 
 # Run the production server
 prod:
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config logging_config.yml
+    uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config logging_config.yml
 
 # Start development database
 db:
@@ -21,34 +25,34 @@ db_stop:
 
 # Run the test suite
 test:
-    pytest
+    uv run pytest
 
 # Run the test suite with coverage report
 cov:
-    pytest --cov=app
+    uv run pytest --cov=app
 
 
 #### Static analysis ####
 
 # Format code with black
 _black:
-    black .
+    uv run black .
 
 # Check code formatting with black
 _black_check:
-    black --check .
+    uv run black --check .
 
 # Sort imports with isort
 _isort:
-    isort .
+    uv run isort .
 
 # Check import sorting with isort
 _isort_check:
-    isort . --check-only
+    uv run isort . --check-only
 
 # Type checking with pyright
 _pyright_check:
-    pyright
+    uv run pyright
 
 # Format code and sort imports
 fmt:
@@ -66,19 +70,19 @@ check:
 
 # Raw code metrics for the app directory
 metrics_raw_app:
-    radon raw app --summary
-
+    uv run radon raw app --summary
+    
 # Raw code metrics for the tests directory
 metrics_raw_tests:
-    radon raw tests --summary
+    uv run radon raw tests --summary
 
 # Cyclomatic complexity for the app directory
 metrics_cc_app:
-    radon cc app --average
+    uv run radon cc app --average
 
 # Cyclomatic complexity for the tests directory
 metrics_cc_tests:
-    radon cc tests --average
+    uv run radon cc tests --average
 
 # Show all code metrics
 metrics_all:

@@ -11,10 +11,6 @@ readme = "README.md"
 license = { text = "MIT" }
 
 
-[tool.pdm]
-distribution = false
-
-
 [dependency-groups]
 dev = [
     "requests>=2.32.5",
