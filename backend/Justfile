@@ -8,6 +8,14 @@ dev:
 prod:
     uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config logging_config.yml
 
+# Start development database
+db:
+    docker compose -f ../database/docker-compose.yml up -d
+
+# Stop development database
+db_stop:
+    docker compose -f ../database/docker-compose.yml down
+
 
 #### Testing ####
 
