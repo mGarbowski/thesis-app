@@ -1,4 +1,4 @@
-# Demo systemu rozpoznawania twarzy
+# Setosa - demo systemu rozpoznawania twarzy
 
 Mikołaj Garbowski - element pracy dyplomowej inżynierskiej
 
