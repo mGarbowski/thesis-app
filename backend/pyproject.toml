@@ -5,7 +5,7 @@ description = "Backend for Setosa, a simple face recognition system demo for my 
 authors = [
     { name = "Mikołaj Garbowski", email = "mikolaj.garbowski@gmail.com" },
 ]
-dependencies = ["fastapi[all]>=0.116.1", "asyncpg>=0.30.0", "sqlalchemy[asyncio]>=2.0.43", "python-multipart>=0.0.20", "numpy>=2.3.2", "pgvector>=0.4.1", "facenet-pytorch>=2.5.3", "torch>=2.8.0", "pillow>=11.3.0", "pydantic-settings>=2.10.1"]
+dependencies = ["fastapi[all]>=0.116.1", "asyncpg>=0.30.0", "sqlalchemy[asyncio]>=2.0.43", "python-multipart>=0.0.20", "numpy>=2.3.2", "pgvector>=0.4.1", "facenet-pytorch>=2.5.3", "torch>=2.7.0", "pillow>=11.3.0", "pydantic-settings>=2.10.1"]
 requires-python = "==3.12.*"
 readme = "README.md"
 license = { text = "MIT" }
