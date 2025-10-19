@@ -16,22 +16,27 @@ Mikołaj Garbowski - element pracy dyplomowej inżynierskiej
   * wyświetlenie najbliższego dopasowania do twarzy ze zdjęcia z dysku
   * przeglądanie zdjęć zapisanych w bazie
 
-  
 ## Instalacja i uruchomienie
+
+### Wymagania
+
+* [Docker](https://docs.docker.com/)
+* [uv](https://docs.astral.sh/uv/)
+* [just](https://github.com/casey/just)
 
 ### Uruchomienie w trybie produkcyjnym
 
 Aplikacja jest skonteneryzowana. Składa się z trzech kontenerów:
 
-* `db` - Baza danych PostgreSQL z wtyczką pgvector 
+* `db` - Baza danych PostgreSQL z wtyczką pgvector
 * `backend` - aplikacja FastAPI z modelami ML detekcji i ekstrakcji cech
 * `nginx` - serwer HTTP serwujący aplikację frontendową i reverse proxy do aplikacji backendowej.
 
 ```shell
-docker compose up --build
+just run
 ```
 
-Aplikacja będzie dostępna pod adresem http://localhost:8000
+Aplikacja będzie dostępna pod adresem <http://localhost:8000>
 
 ### Uruchomienie w trybie deweloperskim
 
@@ -41,8 +46,10 @@ Do rozwoju aplikacji, wspiera przeładowanie kodu przy jego zmianie.
 
 W kontenerze Docker
 
+Z katalogu `backend`
+
 ```shell
-docker compose -f database/docker-compose.yml up
+just db
 ```
 
 #### Aplikacja backend
@@ -53,62 +60,54 @@ W katalogu `backend`
 cd backend
 ```
 
-Instalacja narzędzia PDM do zarządzania projektem, zależnościami, środowiskiem wirtualnym itp.
-
-Dokładna, aktualna instrukcja dostępna w [dokumentacji PDM](https://pdm-project.org/latest/)
+Instalacja zależności (w tym deweloperskich, wersje z pliku uv.lock)
 
 ```shell
-curl -sSL https://pdm-project.org/install-pdm.py | python3 -
-```
-
-Instalacja zależności (w tym deweloperskich, wersje z pliku pdm.lcok)
-
-```shell
-pdm install --dev --frozen-lockfile
+just install
 ```
 
 Uruchomienie aplikacji backend
 
 ```shell
-pdm dev
+just dev
 ```
 
-Automatycznie wygenerowana dokumentacja API (Swagger UI) będzie dostępna pod adresem http://localhost:8000/docs
+Automatycznie wygenerowana dokumentacja API (Swagger UI) będzie dostępna pod adresem <http://localhost:8000/docs>
 
 Uruchomienie testów
 
 ```shell
-pdm test
+just test
 ```
 
 Uruchomienie testów z raportem pokrycia kodu
 
 ```shell
-pdm cov
+just cov
 ```
 
 Uruchomienie formatera
 
 ```shell
-pdm fmt
+just fmt
 ```
 
 Sprawdzenie formatowania i typów
 
 ```shell
-pdm check
+just check
 ```
 
 Metryki kodu (liczba linijek, złożoność cyklomatyczna itp.)
 
 ```shell
-pdm metrics_all
+just metrics_all
 ```
 
 Pozostałe komendy
 
 ```shell
-pdm run --list
+just -l
 ```
 
 #### Aplikacja frontend
@@ -124,29 +123,29 @@ Instalacja NodeJS i NPM - instrukcja w [dokumentacji NodeJS](https://nodejs.org/
 Instalacja zależności (wersje z pliku package-lock.json)
 
 ```shell
-npm ci
+just install
 ```
 
 Uruchomienie aplikacji frontend
 
 ```shell
-npm run dev
+just dev
 ```
 
 Zbudowanie aplikacji
 
 ```shell
-npm run build
+just build
 ```
 
 Uruchomienie formatera i lintera
 
 ```shell
-npm run fmt
+just fmt
 ```
 
 Sprawdzenie formatowania i lintera
 
 ```shell
-npm run check
+just check
 ```
