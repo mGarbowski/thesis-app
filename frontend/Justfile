@@ -1,3 +1,7 @@
+# Install dependencies
+install:
+    npm ci
+
 # Build for production
 build:
     npm run build
