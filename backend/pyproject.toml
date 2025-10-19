@@ -5,41 +5,11 @@ description = "Backend for Setosa, a simple face recognition system demo for my 
 authors = [
     { name = "Mikołaj Garbowski", email = "mikolaj.garbowski@gmail.com" },
 ]
-dependencies = ["fastapi[all]>=0.116.1", "asyncpg>=0.30.0", "sqlalchemy[asyncio]>=2.0.43", "python-multipart>=0.0.20", "numpy>=2.3.2", "pgvector>=0.4.1", "facenet-pytorch>=2.5.3", "torch>=2.8.0", "pillow>=11.3.0", "pydantic-settings>=2.10.1"]
+dependencies = ["fastapi[all]>=0.116.1", "asyncpg>=0.30.0", "sqlalchemy[asyncio]>=2.0.43", "python-multipart>=0.0.20", "numpy>=2.3.2", "pgvector>=0.4.1", "facenet-pytorch>=2.5.3", "torch>=2.7.0", "pillow>=11.3.0", "pydantic-settings>=2.10.1"]
 requires-python = "==3.12.*"
 readme = "README.md"
 license = { text = "MIT" }
 
-
-[tool.pdm]
-distribution = false
-
-[tool.pdm.scripts]
-dev = { shell = "fastapi dev", help = "Run the development server with auto-reload" }
-prod = { shell = "uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config logging_config.yml", help = "Run the production server" }
-test = { shell = "pytest", help = "Run the test suite" }
-cov = { shell = "pytest --cov=app", help = "Run the test suite with coverage report" }
-
-# Static analysis
-_black = "black ."
-_black_check = "black --check ."
-_isort = "isort ."
-_isort_check = "isort . --check-only"
-_pyright_check = "pyright"
-fmt = { composite = ["_black", "_isort"], help = "Format code and sort imports" }
-check = { composite = ["_black_check", "_isort_check", "_pyright_check"], help = "Check formatting and types" }
-
-# Code metrics
-metrics_raw_app = { shell = "radon raw app --summary", help = "Raw code metrics for the app directory" }
-metrics_raw_tests = { shell = "radon raw tests --summary", help = "Raw code metrics for the tests directory" }
-metrics_cc_app = { shell = "radon cc app --average", help = "Cyclomatic complexity for the app directory" }
-metrics_cc_tests = { shell = "radon cc tests --average", help = "Cyclomatic complexity for the tests directory" }
-metrics_all = { composite = [
-    "metrics_raw_app",
-    "metrics_raw_tests",
-    "metrics_cc_app",
-    "metrics_cc_tests"
-], help = "Show all code metrics" }
 
 [dependency-groups]
 dev = [

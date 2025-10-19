@@ -2,13 +2,20 @@ FROM python:3.12-slim
 
 WORKDIR /srv
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 COPY pyproject.toml pyproject.toml
-COPY pdm.lock pdm.lock
+COPY uv.lock uv.lock
 COPY logging_config.yml logging_config.yml
 
-RUN pip install --no-cache-dir pdm
-RUN pdm install --prod --frozen-lockfile
+# Use Docker cache mount to share uv cache across builds
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 COPY app app
 
-CMD ["pdm", "prod"]
+# Set environment to use the venv created by uv sync
+ENV VIRTUAL_ENV=/srv/.venv
+ENV PATH="/srv/.venv/bin:$PATH"
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging_config.yml"]
