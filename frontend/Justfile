@@ -1,0 +1,15 @@
+# Build for production
+build:
+    npm run build
+
+# Run development server
+dev:
+    npm run dev
+
+# Check formatting and linting
+check:
+    npm run check
+
+# Format code and run linter
+fmt:
+    npm run fmt
