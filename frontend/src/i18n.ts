@@ -23,7 +23,7 @@ const plTranslations = {
 	similarity: "Podobieństwo",
 	matchedFace: "Dopasowana twarz",
 	capturePhoto: "Zrób zdjęcie",
-	retakePhoto: "Zrób nowe ponownie",
+	retakePhoto: "Zrób nowe zdjęcie",
 	faceUploadedSuccessfully: "Twarz została pomyślnie zapisana",
 	anErrorOccurredDuringUpload: "Wystąpił błąd podczas przesyłania",
 };
