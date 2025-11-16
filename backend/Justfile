@@ -33,7 +33,7 @@ test:
 
 # Run the test suite with coverage report
 cov:
-    uv run pytest --cov=app
+    uv run pytest --cov=app --cov-report=term-missing
 
 
 #### Static analysis ####
