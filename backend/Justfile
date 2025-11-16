@@ -20,6 +20,10 @@ db:
 db_stop:
     docker compose -f ../database/docker-compose.yml down
 
+# Seed the database with initial data
+seed *args:
+    uv run python scripts/lfw_seed.py {{args}}
+
 
 #### Testing ####
 
